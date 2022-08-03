@@ -1,99 +1,50 @@
-
-using Base: Indices, tail
-
-struct TimeSeries{T} <: AbstractArray{T,1}
+struct TimeSeries{T} <: AbstractVector{T}
     n::Int
-    t::Vector{T}
-
+    t::OffsetVector{T, StepRangeLen{T, TwicePrecision{T}, TwicePrecision{T}, Int}}
     Δt::T
-    step::Int
 
-    function TimeSeries{T}(n, Δt, step) where {T}
-        @assert T <: Real
-        @assert n ≥ 0
-        @assert step > 0
-
-        t = zeros(T, n+1)
-        new(n, t, Δt, step)
-    end
-
-    function TimeSeries{T}(n, t, Δt, step) where {T}
-        new(n, t, Δt, step)
+    function TimeSeries(ti::AbstractVector, Δt::T) where {T <: Real}
+        n = length(ti)-1
+        t = OffsetVector(ti, 0:n)
+        new{T}(n, t, Δt)
     end
 end
 
-function TimeSeries(n::Int, Δt::T, step::Int=1) where {T}
-    return TimeSeries{T}(n, Δt, step)
+function TimeSeries(tbegin::T, tend::T, Δt::T) where {T <: Real}
+    TimeSeries(tbegin:Δt:tend, Δt)
 end
 
-function TimeSeries(t::Vector{T}, step=1) where {T}
+function TimeSeries(n::Integer, Δt::T) where {T}
+    TimeSeries(zero(Δt), n*Δt, Δt)
+end
+
+function TimeSeries(t::AbstractVector)
     @assert length(t) ≥ 2
-    n  = length(t)-1
-    Δt = (t[2] - t[1]) / step
-    return TimeSeries{T}(n, t, Δt, step)
+    Δt = t[2] - t[1]
+    return TimeSeries(t[begin], t[end], Δt)
 end
 
-Base.:(==)(ts1::TimeSeries, ts2::TimeSeries) = (
-                                ts1.n  == ts2.n
-                             && ts1.t  == ts2.t
-                             && ts1.Δt == ts2.Δt
-                             && ts1.step == ts2.step)
+@inline Base.parent(ts::TimeSeries) = ts.t
+@inline Base.eltype(::TimeSeries{T}) where {T} = T
+@inline Base.ndims(::TimeSeries) = 1
 
-GeometricBase.ntime(ts::TimeSeries) = ts.n
+@inline Base.size(ts::TimeSeries, args...) = size(parent(ts), args...)
 
-Base.parent(ts::TimeSeries) = ts.t
-Base.eltype(ts::TimeSeries{T}) where {T} = T
-Base.ndims(ts::TimeSeries) = 1
+@inline Base.eachindex(ts::TimeSeries) = eachindex(parent(ts))
+@inline Base.eachindex(ind::IndexCartesian, ts::TimeSeries) = eachindex(ind, parent(ts))
+@inline Base.eachindex(ind::IndexLinear, ts::TimeSeries) = eachindex(ind, parent(ts))
 
-Base.size(ts::TimeSeries) = (ts.n+1,)
-Base.size(ts::TimeSeries, d) = d == 1 ? ts.n+1 : 1
+@inline Base.firstindex(ts::TimeSeries, args...) = firstindex(parent(ts), args...)
+@inline Base.lastindex(ts::TimeSeries, args...) = lastindex(parent(ts), args...)
 
-Base.eachindex(::IndexCartesian, ts::TimeSeries) = CartesianIndices(axes(ts))
-Base.eachindex(::IndexLinear, ts::TimeSeries) = axes(ts, 1)
+@inline Base.axes(ts::TimeSeries, args...) = axes(parent(ts), args...)
 
-Base.firstindex(ts::TimeSeries) = 0
-Base.firstindex(ts::TimeSeries,d) = d == 1 ? 0 : 1
+@inline Base.strides(ts::TimeSeries) = strides(collect(parent(parent(ts))))
 
-Base.lastindex(ts::TimeSeries) = ts.n
-Base.lastindex(ts::TimeSeries,d) = d == 1 ? lastindex(ts) : 1
+@inline Base.getindex(ts::TimeSeries, args...) = getindex(parent(ts), args...)
 
-@inline Base.axes(ts::TimeSeries) = (0:ts.n,)
-@inline Base.axes(ts::TimeSeries, d) = d == 1 ? (axes(parent(ts))[d] .- 1) : (1:1)
+@inline GeometricBase.ntime(ts::TimeSeries) = ts.n
 
-Base.strides(ts::TimeSeries) = strides(ts.t)
-
-Base.:(==)(ts::TimeSeries{T1}, vec::AbstractVector{T2}) where {T1,T2} = (T1 == T2 && ts.t == vec)
+Base.:(==)(ts1::TimeSeries, ts2::TimeSeries) = (ts1.n == ts2.n && ts1.t == ts2.t && ts1.Δt == ts2.Δt)
+Base.:(==)(ts::TimeSeries{T1}, vec::AbstractVector{T2}) where {T1,T2} = (T1 == T2 && collect(parent(parent(ts))) == vec)
 Base.:(==)(vec::AbstractVector, ts::TimeSeries) = (ts == vec)
-
-
-@inline function Base.setindex!(ts::TimeSeries, t, i::Int)
-    @boundscheck checkbounds(ts.t, i.+1)
-    @inbounds setindex!(ts.t, t, i.+1)
-end
-
-# @inline function Base.getindex(ts::TimeSeries, i::Int)
-#     @boundscheck checkbounds(ts.t, i.+1)
-#     @inbounds getindex(ts.t, i.+1)
-#     return t
-# end
-
-@inline function Base.getindex(ts::TimeSeries, i::Union{Int,CartesianIndex})
-    @boundscheck checkbounds(ts.t, i.+1)
-    @inbounds getindex(ts.t, i.+1)
-end
-
-@inline function Base.getindex(ts::TimeSeries, I::AbstractRange{Int})
-    [ts[i] for i in I]
-end
-
-@inline function Base.getindex(ts::TimeSeries, ::Colon)
-    OffsetArray([ts[i] for i in axes(ts)], axes(ts,1))
-end
-
-
-function compute_timeseries!(ts::TimeSeries, t₀::Real)
-    ts[0] = t₀
-    for i in Base.OneTo(ts.n)
-        ts[i] = ts[0] + i * ts.step * ts.Δt
-    end
-end

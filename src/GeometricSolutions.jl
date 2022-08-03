@@ -1,5 +1,7 @@
 module GeometricSolutions
 
+using Base: TwicePrecision
+using OffsetArrays: OffsetVector
 using Reexport
 using Test
 
@@ -15,7 +17,7 @@ export AbstractDataSeries, DataSeries,
 
 include("timeseries.jl")
 
-export TimeSeries, compute_timeseries!
+export TimeSeries
 
 
 include("abstract_solution.jl")
