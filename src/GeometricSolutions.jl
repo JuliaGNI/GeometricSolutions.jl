@@ -10,9 +10,8 @@ using Test
 
 include("dataseries.jl")
 
-export get_data!, set_data!
-export AbstractDataSeries, DataSeries,
-       DataSeriesConstructor
+export DataSeries, ScalarDataSeries
+export arrtype
 
 
 include("timeseries.jl")
