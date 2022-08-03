@@ -1,12 +1,12 @@
-struct TimeSeries{T} <: AbstractVector{T}
+struct TimeSeries{T, OT <: OffsetVector{T}} <: AbstractVector{T}
     n::Int
-    t::OffsetVector{T, StepRangeLen{T, TwicePrecision{T}, TwicePrecision{T}, Int}}
+    t::OT
     Δt::T
 
     function TimeSeries(ti::AbstractVector, Δt::T) where {T <: Real}
         n = length(ti)-1
         t = OffsetVector(ti, 0:n)
-        new{T}(n, t, Δt)
+        new{T, typeof(t)}(n, t, Δt)
     end
 end
 
