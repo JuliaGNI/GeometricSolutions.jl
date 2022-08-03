@@ -32,6 +32,7 @@ nt = 10
     @test eltype(ds) == dt
     @test parent(ds) == ds.d
     @test typeof(parent(ds)) <: OffsetArray
+    @test ntime(ds)  == nt
 
     @test eachindex(ds) == 0:nt
     @test eachindex(IndexLinear(), ds) == 0:nt
@@ -91,6 +92,7 @@ end
     @test arrtype(ds) == at
     @test parent(ds) == ds.d
     @test typeof(parent(ds)) <: OffsetArray
+    @test ntime(ds)  == nt
 
     @test eachindex(ds) == 0:nt
     @test eachindex(IndexLinear(), ds) == 0:nt
