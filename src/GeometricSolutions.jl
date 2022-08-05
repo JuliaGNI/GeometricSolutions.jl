@@ -6,6 +6,7 @@ using Reexport
 using Test
 
 @reexport using GeometricBase
+using GeometricEquations
 
 
 include("dataseries.jl")
@@ -23,5 +24,10 @@ include("abstract_solution.jl")
 
 export AbstractSolution
 export counter, offset, lastentry
+
+
+include("geometric_solution.jl")
+
+export GeometricSolution
 
 end

@@ -1,5 +1,5 @@
 
-abstract type AbstractSolution{dType, tType, N} end
+abstract type AbstractSolution{dType, tType} end
 
 GeometricBase.nsave(sol::AbstractSolution) = error("nsave() not implemented for ", typeof(sol))
 GeometricBase.ntime(sol::AbstractSolution) = error("ntime() not implemented for ", typeof(sol))
