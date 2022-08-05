@@ -44,6 +44,7 @@ end
 @inline Base.getindex(ts::TimeSeries, args...) = getindex(parent(ts), args...)
 
 @inline GeometricBase.ntime(ts::TimeSeries) = ts.n
+@inline GeometricBase.eachtimestep(ts::TimeSeries) = Base.OneTo(ntime(ts))
 
 Base.:(==)(ts1::TimeSeries, ts2::TimeSeries) = (ts1.n == ts2.n && ts1.t == ts2.t && ts1.Δt == ts2.Δt)
 Base.:(==)(ts::TimeSeries{T1}, vec::AbstractVector{T2}) where {T1,T2} = (T1 == T2 && collect(parent(parent(ts))) == vec)
