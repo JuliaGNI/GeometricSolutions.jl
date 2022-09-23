@@ -22,7 +22,7 @@ export TimeSeries
 include("abstract_solution.jl")
 
 export AbstractSolution
-export counter, offset, lastentry
+export nstore
 
 
 include("geometric_solution.jl")

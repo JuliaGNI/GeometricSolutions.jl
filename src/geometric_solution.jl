@@ -19,7 +19,6 @@ Contains all fields necessary to store the solution of an ODE.
 * `s`:  NamedTuple of DataSeries for each solution component
 * `ntime`: number of time steps to compute
 * `nsave`: store every nsave'th time step (default: 1)
-* `counter`: counter for copied solution entries
 
 ### Constructors
 
@@ -48,36 +47,55 @@ mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <: Abs
 
     step::Int
     nstore::Int
-    counter::Int
+    offset::Int
 
     function GeometricSolution(problem::GeometricProblem; step = 1)
         t = TimeSeries(tbegin(problem), tend(problem), tstep(problem))
         nstore = div(ntime(t), step)
         s = NamedTuple{keys(problem.ics)}(Tuple(DataSeries(x, nstore) for x in problem.ics))
         period = _periodicity(s, periodicity(problem))
-        new{datatype(problem), timetype(problem), typeof(s), typeof(problem), typeof(period)}(t, s, problem, period, step, nstore, 0)
+        sol = new{datatype(problem), timetype(problem), typeof(s), typeof(problem), typeof(period)}(t, s, problem, period, step, nstore, 0)
+        sol[0] = initial_conditions(problem)
+        return sol
     end
 end
 
-@inline step(sol::GeometricSolution) = sol.step
+@inline Base.step(sol::GeometricSolution) = sol.step
 @inline nstore(sol::GeometricSolution) = sol.nstore
-@inline counter(sol::GeometricSolution) = sol.counter
-@inline lastentry(sol::GeometricSolution) = sol.counter - 1
+
+@inline GeometricBase.tspan(sol::GeometricSolution) = tspan(sol.t)
+@inline GeometricBase.tstep(sol::GeometricSolution) = tstep(sol.t)
 
 @inline GeometricBase.ntime(sol::GeometricSolution) = ntime(sol.t)
 @inline GeometricBase.timesteps(sol::GeometricSolution) = sol.t
 @inline GeometricBase.eachtimestep(sol::GeometricSolution) = eachtimestep(sol.t)
 @inline GeometricBase.periodicity(sol::GeometricSolution) = sol.periodicity
 
-function Base.setindex!(sol::GeometricSolution, s::NamedTuple, i::Int)
-    @assert keys(sol.s) == keys(s)
-    @assert i <= ntime(sol)
+@inline function Base.hasproperty(::GeometricSolution{DT,TT,dsType}, s::Symbol) where {DT,TT,dsType}
+    hasfield(dsType, s) || hasfield(GeometricSolution, s)
+end
 
-    if mod(i, step(sol)) == 0
-        for k in keys(sol.s)
-            sol.s[k][div(i, step(sol))] = s[k]
+@inline function Base.getproperty(sol::GeometricSolution{DT,TT,dsType}, s::Symbol) where {DT,TT,dsType}
+    if hasfield(dsType, s)
+        return getfield(sol, :s)[s]
+    else
+        return getfield(sol, s)
+    end
+end
+
+function Base.getindex(sol::GeometricSolution, n::Int)
+    @assert n ≤ ntime(sol)
+    NamedTuple{(:t, keys(sol.s)...)}((timesteps(sol)[n], (sol.s[k][n] for k in keys(sol.s))...))
+end
+
+function Base.setindex!(sol::GeometricSolution, s::NamedTuple, n::Int)
+    # @assert keys(sol.s) ⊆ keys(s)
+    @assert n ≤ ntime(sol)
+
+    if mod(n, step(sol)) == 0
+        for k in keys(sol.s) ∩ keys(s)
+            sol.s[k][div(n, step(sol))] = s[k]
         end
-        sol.counter += 1
     end
     
     return s

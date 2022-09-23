@@ -1,3 +1,4 @@
+using GeometricBase
 using GeometricSolutions
 using OffsetArrays
 using Test
@@ -52,8 +53,6 @@ nt = 10
     d = [x for x in ds]
     @test d == parent(ds)
 
-    reset!(ds)
-    @test ds[0] == ds[end]
 
     d = rand(nt+1)
     ds = DataSeries(d)
@@ -116,8 +115,6 @@ end
     d = [x for x in ds]
     @test d == parent(ds)
 
-    reset!(ds)
-    @test ds[0] == ds[end]
 
     d = rand(nt+1)
     ds = DataSeries(d)

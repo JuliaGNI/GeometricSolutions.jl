@@ -6,13 +6,13 @@ using Test
 
 @testset "$(rpad("Timeseries",80))" begin
     nt = 10
-    tbeg = 0.0
-    tend = 1.0
+    ttbeg = 0.0
+    ttend = 1.0
     Δt = 0.1
-    ti = tbeg:Δt:tend
+    ti = ttbeg:Δt:ttend
 
     ts  = TimeSeries(ti, Δt)
-    ts1 = TimeSeries(tbeg, tend, Δt)
+    ts1 = TimeSeries(ttbeg, ttend, Δt)
     ts2 = TimeSeries(nt, Δt)
     ts3 = TimeSeries(collect(ti))
 
@@ -45,8 +45,8 @@ using Test
     @test eachindex(IndexLinear(), ts) == 0:nt
     @test eachindex(IndexCartesian(), ts) == CartesianIndices((0:nt,))
 
-    @test ts[0] == ts[begin] == tbeg
-    @test ts[nt] == ts[end] == tend
+    @test tbegin(ts) == ts[0] == ts[begin] == ttbeg
+    @test tend(ts) == ts[nt] == ts[end] == ttend
 
     @test ts == vec(ti)
     @test vec(ti) == ts
