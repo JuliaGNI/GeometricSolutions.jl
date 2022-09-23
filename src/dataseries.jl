@@ -18,7 +18,7 @@ const ScalarDataSeries{DT} = DataSeries{DT,DT}
 
 @inline Base.parent(ds::DataSeries) = ds.d
 @inline Base.eltype(::DataSeries{DT}) where {DT} = DT
-@inline arrtype(::DataSeries{DT,AT}) where {DT,AT} = AT
+@inline GeometricBase.arrtype(::DataSeries{DT,AT}) where {DT,AT} = AT
 @inline Base.ndims(::DataSeries) = 1
 
 @inline Base.size(ds::DataSeries, args...) = size(parent(ds), args...)

@@ -1,3 +1,4 @@
+using GeometricBase
 using GeometricSolutions
 using OffsetArrays
 using Test

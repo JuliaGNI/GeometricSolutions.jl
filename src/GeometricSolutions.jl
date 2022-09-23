@@ -5,14 +5,13 @@ using OffsetArrays: OffsetVector
 using Reexport
 using Test
 
-@reexport using GeometricBase
+using GeometricBase
 using GeometricEquations
 
 
 include("dataseries.jl")
 
 export DataSeries, ScalarDataSeries
-export arrtype
 
 
 include("timeseries.jl")
