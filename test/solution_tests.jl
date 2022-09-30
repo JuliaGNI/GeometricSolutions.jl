@@ -48,7 +48,8 @@ end
     t = timesteps(sol1)
     q = initial_conditions(prob).q
     for i in eachtimestep(t)
-        x = Tests.ExponentialGrowth.solution(t[i], q, zero(q), parameters(prob))
+        x = zero(q)
+        Tests.ExponentialGrowth.solution(x, t[i], q, t[i-1], parameters(prob))
         sol1[i] = (q = x,)
         sol2[i] = (q = x,)
     end
