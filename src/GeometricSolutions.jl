@@ -1,7 +1,7 @@
 module GeometricSolutions
 
 using Base: TwicePrecision
-using OffsetArrays: OffsetVector
+using OffsetArrays: OffsetArray, OffsetVector
 using Reexport
 using Test
 
