@@ -40,6 +40,10 @@ const ScalarDataSeries{DT} = DataSeries{DT,DT}
 @inline Base.getindex(ds::DataSeries, ind::Union{Int,IndexLinear}, i, args...) = getindex(parent(ds)[ind], i, args...)
 @inline Base.setindex!(ds::DataSeries, x::AbstractArray, ind::Union{Int,IndexLinear}) = copy!(parent(ds)[ind], x)
 
+@inline function Base.getindex(ds::DataSeries, ::Colon, j::Union{Int,CartesianIndex})
+    OffsetArray([ds[i][j] for i in eachindex(ds)], eachindex(ds))
+end
+
 @inline GeometricBase.ntime(ds::DataSeries) = lastindex(ds)
 
 Base.:(==)(ds1::DataSeries, ds2::DataSeries) = parent(ds1) == parent(ds2)
