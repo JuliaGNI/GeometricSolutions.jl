@@ -63,3 +63,13 @@ end
 function Base.zero(ds::DataSeries)
     DataSeries(zero(ds[begin]), ntime(ds))
 end
+
+function Base.Array(ds::DataSeries)
+    nt = ntime(ds)
+    nd = length(vec(ds[begin]))
+    z = zeros(nt,nd)
+    for (i,elem) in enumerate(ds)
+        z[i,:] .= vec(elem)
+    end 
+    Array(z')
+end
