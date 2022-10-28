@@ -28,7 +28,7 @@ GeometricSolution(t::TimeSeries, q::DataSeries, ntimesteps)
 ```
 
 The usual way to initialise a `Solution` is by passing an equation, which for
-`GeometricSolution` has to be an [`ODE`](@ref) or [`SODE`](@ref), a time step `Δt`
+`GeometricSolution` has to be an [`ODEProblem`](@ref) or [`SODEProblem`](@ref), a time step `Δt`
 and the number of time steps `ntimesteps`. The optional parameters `nsave` and
 `nwrite` determine the intervals for storing the solution and writing to file,
 i.e., if `nsave > 1` only every `nsave`'th solution is actually stored, and
