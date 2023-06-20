@@ -8,6 +8,11 @@ using Test
 using GeometricBase
 using GeometricEquations
 
+import GeometricBase: eachtimestep, timestep, timesteps
+
+export arrtype, nstore, ntime, tbegin, tend
+export eachtimestep, timestep, timesteps
+
 
 include("dataseries.jl")
 
@@ -22,7 +27,6 @@ export TimeSeries
 include("abstract_solution.jl")
 
 export AbstractSolution
-export nstore
 
 
 include("geometric_solution.jl")
