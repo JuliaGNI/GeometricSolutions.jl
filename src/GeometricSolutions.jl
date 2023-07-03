@@ -36,4 +36,9 @@ include("geometric_solution.jl")
 
 export GeometricSolution
 
+
+include("ensemble_solution.jl")
+
+export EnsembleSolution
+
 end

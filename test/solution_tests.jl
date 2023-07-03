@@ -60,4 +60,10 @@ end
 
 @testset "$(rpad("Ensemble Solution",80))" begin
 
+    prob = Tests.ExponentialGrowth.odeensemble()
+    
+    sol1 = EnsembleSolution(prob)
+    sol2 = EnsembleSolution(prob; step = nstep)
+
+    @test sol1.t == sol2.t
 end
