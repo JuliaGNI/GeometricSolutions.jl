@@ -34,8 +34,7 @@ mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <: Abs
     nstore::Int
     offset::Int
 
-    function GeometricSolution(problem::GeometricProblem; step = 1)
-        t = TimeSeries(tbegin(problem), tend(problem), tstep(problem))
+    function GeometricSolution(t::TimeSeries, problem::GeometricProblem, step)
         nstore = div(ntime(t), step)
         s = NamedTuple{keys(problem.ics)}(Tuple(DataSeries(x, nstore) for x in problem.ics))
         period = _periodicity(s, periodicity(problem))
@@ -43,6 +42,11 @@ mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <: Abs
         sol[0] = initial_conditions(problem)
         return sol
     end
+end
+
+function GeometricSolution(problem::GeometricProblem; step = 1)
+    t = TimeSeries(tbegin(problem), tend(problem), tstep(problem))
+    GeometricSolution(t, problem, step)
 end
 
 @inline Base.step(sol::GeometricSolution) = sol.step
