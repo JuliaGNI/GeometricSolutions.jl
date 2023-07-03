@@ -1,32 +1,26 @@
 """
-`GeometricSolution`: Solution of an ordinary differential equation
+`GeometricSolution`: Solution of a geometric differential equation
 
-Contains all fields necessary to store the solution of an ODE.
+Contains all fields necessary to store the solution of a GeometricProblem.
 
 ### Fields
 
-* `nt`: number of time steps to store
 * `t`:  time steps
 * `s`:  NamedTuple of DataSeries for each solution component
-* `ntime`: number of time steps to compute
-* `nsave`: store every nsave'th time step (default: 1)
+* `step`: store every step'th time step (default: 1)
+* `nstore`: number of time steps to store
+* `offset`: offset of current time step
 
 ### Constructors
 
 ```julia
-GeometricSolution(problem; nsave=DEFAULT_NSAVE)
-GeometricSolution(t::TimeSeries, q::DataSeries, ntimesteps)
+GeometricSolution(problem; step=1)
 ```
 
-The usual way to initialise a `Solution` is by passing an equation, which for
-`GeometricSolution` has to be an [`ODEProblem`](@ref) or [`SODEProblem`](@ref), a time step `Δt`
-and the number of time steps `ntimesteps`. The optional parameters `nsave` and
-`nwrite` determine the intervals for storing the solution and writing to file,
-i.e., if `nsave > 1` only every `nsave`'th solution is actually stored, and
-every `nwrite`'th time step the solution is stored to disk.
-
-The other constructors, either passing a `TimeSeries` and a `DataSeries` or a
-filename are used to read data from previous simulations.
+The usual way to initialise a `Solution` is by passing a [`GeometricProblem`](@ref), which 
+can for example be an [`ODEProblem`](@ref) or [`PODEProblem`](@ref).
+The optional parameter `step` determines the intervals for storing the solution,
+i.e., if `store > 1` only every `store`'th solution is actually stored.
 
 """
 mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <: AbstractSolution{dType,tType}
