@@ -14,6 +14,9 @@ export arrtype, nstore, ntime, tbegin, tend
 export eachtimestep, timestep, timesteps
 
 
+include("utils.jl")
+
+
 include("dataseries.jl")
 
 export DataSeries, ScalarDataSeries
