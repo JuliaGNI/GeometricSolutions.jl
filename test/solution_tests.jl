@@ -60,4 +60,24 @@ end
 
 @testset "$(rpad("Ensemble Solution",80))" begin
 
+    prob = Tests.ExponentialGrowth.odeensemble()
+    
+    esol1 = EnsembleSolution(prob)
+    esol2 = EnsembleSolution(prob; step = nstep)
+
+    @test esol1.t == esol2.t
+
+    @test ntime(esol1) == ntime(esol1.t)
+    @test timesteps(esol1) == collect(tbegin(prob):timestep(prob):tend(prob))
+
+    @test ntime(esol2) == ntime(esol2.t)
+    @test timesteps(esol2) == collect(tbegin(prob):timestep(prob):tend(prob))
+
+
+    sols = (solution(esol1, 1), solution(esol1, 2), solution(esol1, 3))
+
+    for sol in esol1
+        @test sol ∈ sols
+    end
+
 end
