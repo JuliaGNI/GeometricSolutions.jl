@@ -1,18 +1,18 @@
 module GeometricSolutions
 
-using Base: TwicePrecision
-using OffsetArrays: OffsetArray, OffsetVector
+using GeometricBase
+using GeometricEquations
 using Reexport
 using Test
 
-using GeometricBase
-using GeometricEquations
+using Base: TwicePrecision
+using OffsetArrays: OffsetArray, OffsetVector
 
 import GeometricBase: eachtimestep, timestep, timesteps
 
 export arrtype, nstore, ntime, tbegin, tend
 export eachtimestep, timestep, timesteps
-export relative_maximum_error
+export maximum_error, relative_maximum_error, relative_norm_error
 
 
 include("utils.jl")
