@@ -75,5 +75,6 @@ function Base.Array(ds::DataSeries)
 end
 
 function relative_maximum_error(ds::DataSeries, ref::DataSeries)
-    maximum(GeometricBase.Utils.relative_maximum_error.(ds.d, ref.d))
+    @assert axes(ds.d) == axes(ref.d)
+    maximum(maximum_error.(ds.d, ref.d) ./ maximum.(ref.d))
 end
