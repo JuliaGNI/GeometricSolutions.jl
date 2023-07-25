@@ -58,6 +58,9 @@ nt = 10
     @test parent(parent(ds)) == d
 
     @test parent(zero(ds)) == zero(parent(ds))
+
+    @test relative_maximum_error(DataSeries(d), ds) == 0
+
 end
 
 
@@ -120,4 +123,7 @@ end
     @test parent(parent(ds)) == d
 
     @test parent(zero(ds)) == zero(parent(ds))
+
+    @test relative_maximum_error(DataSeries(d), ds) == 0
+    
 end

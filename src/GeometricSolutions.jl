@@ -12,6 +12,7 @@ import GeometricBase: eachtimestep, timestep, timesteps
 
 export arrtype, nstore, ntime, tbegin, tend
 export eachtimestep, timestep, timesteps
+export relative_maximum_error
 
 
 include("utils.jl")

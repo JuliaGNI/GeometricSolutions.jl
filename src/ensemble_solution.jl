@@ -29,3 +29,13 @@ end
 
 Base.length(sol::EnsembleSolution) = length(sol.s)
 Base.iterate(sol::EnsembleSolution, i=1) = i > length(sol) ? nothing : (solution(sol, i), i+1)
+
+function relative_maximum_error(sols::EnsembleSolution, refs::EnsembleSolution)
+    @assert nsamples(sols) == nsamples(refs)
+
+    _errs = [relative_maximum_error(s...) for s in zip(sols, refs)]
+    _keys = keys(_errs[begin])
+    _vals = [getproperty.(_errs, i) for i in _keys]
+
+    NamedTuple{_keys}(maximum.(_vals))
+end

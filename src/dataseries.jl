@@ -73,3 +73,7 @@ function Base.Array(ds::DataSeries)
     end 
     Array(z')
 end
+
+function relative_maximum_error(ds::DataSeries, ref::DataSeries)
+    maximum(GeometricBase.Utils.relative_maximum_error.(ds.d, ref.d))
+end

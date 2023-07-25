@@ -89,3 +89,8 @@ function Base.setindex!(sol::GeometricSolution, s::NamedTuple, n::Int)
     
     return s
 end
+
+function relative_maximum_error(sol::GeometricSolution, ref::GeometricSolution)
+    @assert keys(sol.s) == keys(ref.s)
+    NamedTuple{keys(sol.s)}(relative_maximum_error(s...) for s in zip(sol.s, ref.s))
+end

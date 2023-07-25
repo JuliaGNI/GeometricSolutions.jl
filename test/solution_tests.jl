@@ -7,6 +7,7 @@ using Test
 const nstep = 10
 
 
+
 @testset "$(rpad("Interface Definition",80))" begin
     struct TestSolution{dType, tType} <: AbstractSolution{dType, tType} end
     test_sol = TestSolution{Float64, Float64}()
@@ -55,23 +56,31 @@ end
 
     @test sol1.s.q[ntime(t)] == sol2.s.q[div(ntime(t), nstep)] == sol1.s.q[end] == sol2.s.q[end]
 
+
+    sol = GeometricSolution(prob)
+    for n in eachtimestep(sol)
+        Tests.ExponentialGrowth.solution(sol.q[n], sol.t[n], sol.q[0], sol.t[0], parameters(prob))
+    end
+
+    @test relative_maximum_error(sol, sol).q == 0
+    
 end
 
 
 @testset "$(rpad("Ensemble Solution",80))" begin
 
-    prob = Tests.ExponentialGrowth.odeensemble()
+    probs = Tests.ExponentialGrowth.odeensemble()
     
-    esol1 = EnsembleSolution(prob)
-    esol2 = EnsembleSolution(prob; step = nstep)
+    esol1 = EnsembleSolution(probs)
+    esol2 = EnsembleSolution(probs; step = nstep)
 
     @test esol1.t == esol2.t
 
     @test ntime(esol1) == ntime(esol1.t)
-    @test timesteps(esol1) == collect(tbegin(prob):timestep(prob):tend(prob))
+    @test timesteps(esol1) == collect(tbegin(probs):timestep(probs):tend(probs))
 
     @test ntime(esol2) == ntime(esol2.t)
-    @test timesteps(esol2) == collect(tbegin(prob):timestep(prob):tend(prob))
+    @test timesteps(esol2) == collect(tbegin(probs):timestep(probs):tend(probs))
 
 
     sols = (solution(esol1, 1), solution(esol1, 2), solution(esol1, 3))
@@ -80,4 +89,14 @@ end
         @test sol ∈ sols
     end
 
+
+    sols = EnsembleSolution(probs)
+    for (sol,prob) in zip(sols.s, probs)
+        for n in eachtimestep(sol)
+            Tests.ExponentialGrowth.solution(sol.q[n], sol.t[n], sol.q[0], sol.t[0], parameters(prob))
+        end
+    end
+
+    @test relative_maximum_error(sols, sols).q == 0
+    
 end
