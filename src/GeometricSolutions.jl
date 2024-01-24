@@ -2,7 +2,6 @@ module GeometricSolutions
 
 using GeometricBase
 using GeometricEquations
-using Reexport
 using Test
 
 using Base: TwicePrecision
