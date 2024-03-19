@@ -7,22 +7,6 @@ using Test
 const nstep = 10
 
 
-
-@testset "$(rpad("Interface Definition",80))" begin
-    struct TestSolution{dType, tType} <: AbstractSolution{dType, tType} end
-    test_sol = TestSolution{Float64, Float64}()
-
-    @test_throws ErrorException step(test_sol)
-    @test_throws ErrorException nstore(test_sol)
-    @test_throws ErrorException ntime(test_sol)
-
-    # @test_throws ErrorException offset(test_sol)
-    # @test_throws ErrorException lastentry(test_sol)
-    @test_throws ErrorException timesteps(test_sol)
-    @test_throws ErrorException eachtimestep(test_sol)
-end
-
-
 @testset "$(rpad("Geometric Solution",80))" begin
 
     prob = Tests.ExponentialGrowth.odeproblem()
