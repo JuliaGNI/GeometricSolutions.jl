@@ -7,3 +7,12 @@
 [![Coverage](https://codecov.io/gh/JuliaGNI/GeometricSolutions.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaGNI/GeometricSolutions.jl)
 
 *GeometricSolutions.jl* defines solution data structures for various differential equation types that are used in [GeometricIntegrators.jl](https://github.com/JuliaGNI/GeometricIntegrators.jl).
+
+
+## Development
+
+We are using git hooks, e.g., to enforce that all tests pass before pushing.
+In order to activate these hooks, the following command must be executed once:
+```
+git config core.hooksPath .githooks
+```
