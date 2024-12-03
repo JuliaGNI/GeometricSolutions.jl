@@ -14,13 +14,13 @@ Contains all fields necessary to store the solution of a GeometricProblem.
 ### Constructors
 
 ```julia
-GeometricSolution(problem; step=1)
+GeometricSolution(problem, step = 1)
 ```
 
 The usual way to initialise a `Solution` is by passing a [`GeometricProblem`](@ref), which 
 can for example be an [`ODEProblem`](@ref) or [`PODEProblem`](@ref).
 The optional parameter `step` determines the intervals for storing the solution,
-i.e., if `store > 1` only every `store`'th solution is actually stored.
+i.e., if `step > 1` only every `step`'th solution is actually stored.
 
 """
 mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <: AbstractSolution{dType,tType}
@@ -34,7 +34,8 @@ mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <: Abs
     nstore::Int
     offset::Int
 
-    function GeometricSolution(t::TimeSeries, problem::GeometricProblem, step)
+    function GeometricSolution(t::TimeSeries, problem::GeometricProblem, step::Int = 1)
+        @assert step ≥ 1
         nstore = div(ntime(t), step)
         s = NamedTuple{keys(problem.ics)}(Tuple(DataSeries(x, nstore) for x in problem.ics))
         period = _periodicity(s, periodicity(problem))
@@ -44,9 +45,9 @@ mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <: Abs
     end
 end
 
-function GeometricSolution(problem::GeometricProblem; step = 1)
+function GeometricSolution(problem::GeometricProblem, args...)
     t = TimeSeries(tbegin(problem), tend(problem), tstep(problem))
-    GeometricSolution(t, problem, step)
+    GeometricSolution(t, problem, args...)
 end
 
 @inline Base.step(sol::GeometricSolution) = sol.step

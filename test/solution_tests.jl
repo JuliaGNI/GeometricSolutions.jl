@@ -11,7 +11,7 @@ const nstep = 10
 
     prob = Tests.ExponentialGrowth.odeproblem()
     sol1 = GeometricSolution(prob)
-    sol2 = GeometricSolution(prob; step = nstep)
+    sol2 = GeometricSolution(prob, nstep)
 
     @test sol1.t == sol2.t
     @test sol1.s != sol2.s
@@ -56,7 +56,7 @@ end
     probs = Tests.ExponentialGrowth.odeensemble()
     
     esol1 = EnsembleSolution(probs)
-    esol2 = EnsembleSolution(probs; step = nstep)
+    esol2 = EnsembleSolution(probs, nstep)
 
     @test esol1.t == esol2.t
 

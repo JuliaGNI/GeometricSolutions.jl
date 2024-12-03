@@ -7,7 +7,7 @@ struct EnsembleSolution{dType, tType, sType, probType} <: AbstractSolution{dType
 
     problem::probType
 
-    function EnsembleSolution(problem::EnsembleProblem; step = 1)
+    function EnsembleSolution(problem::EnsembleProblem, step::Int = 1)
         t = TimeSeries(tbegin(problem), tend(problem), tstep(problem))
         s = [GeometricSolution(t, p, step) for p in problem]
         
