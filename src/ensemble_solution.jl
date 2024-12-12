@@ -27,6 +27,10 @@ end
 
 @inline solution(sol::EnsembleSolution, i) = sol.s[i]
 
+Base.getindex(sol::EnsembleSolution, i...) = getindex(sol.s, i...)
+Base.firstindex(sol::EnsembleSolution) = firstindex(sol.s)
+Base.lastindex(sol::EnsembleSolution) = lastindex(sol.s)
+
 Base.length(sol::EnsembleSolution) = length(sol.s)
 Base.iterate(sol::EnsembleSolution, i=1) = i > length(sol) ? nothing : (solution(sol, i), i+1)
 
