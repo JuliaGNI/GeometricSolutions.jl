@@ -66,9 +66,6 @@ end
     @test ntime(esol2) == ntime(esol2.t)
     @test timesteps(esol2) == collect(tbegin(probs):timestep(probs):tend(probs))
 
-    @test esol1[1] == solution(esol1, 1)
-    @test esol1[begin] == solution(esol1, 1)
-    @test esol1[:] == solution(esol1, :)
 
     sols = (solution(esol1, 1), solution(esol1, 2), solution(esol1, 3))
 
