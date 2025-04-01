@@ -6,19 +6,18 @@ struct DataSeries{DT, AT <: AbstractData{DT}} <: AbstractVector{AT}
 
     function DataSeries(v::AbstractVector{AT}) where {DT <: Real, AT <: AbstractData{DT}}
         ntime = length(v) - 1
-        new{DT,AT}(OffsetVector(v, 0:ntime))
+        new{DT, AT}(OffsetVector(v, 0:ntime))
     end
 end
 
 DataSeries(x::AbstractData, ntime::Integer) = DataSeries([zero(x) for _ in 0:ntime])
 DataSeries(ds::DataSeries) = DataSeries(copy(parent(ds)))
 
-const ScalarDataSeries{DT} = DataSeries{DT,DT}
-
+const ScalarDataSeries{DT} = DataSeries{DT, DT}
 
 @inline Base.parent(ds::DataSeries) = ds.d
 @inline Base.eltype(::DataSeries{DT}) where {DT} = DT
-@inline GeometricBase.arrtype(::DataSeries{DT,AT}) where {DT,AT} = AT
+@inline GeometricBase.arrtype(::DataSeries{DT, AT}) where {DT, AT} = AT
 @inline Base.ndims(::DataSeries) = 1
 
 @inline Base.size(ds::DataSeries, args...) = size(parent(ds), args...)
@@ -37,10 +36,12 @@ const ScalarDataSeries{DT} = DataSeries{DT,DT}
 @inline Base.getindex(ds::DataSeries, args...) = getindex(parent(ds), args...)
 @inline Base.setindex!(ds::DataSeries, args...) = setindex!(parent(ds), args...)
 
-@inline Base.getindex(ds::DataSeries, ind::Union{Int,IndexLinear,AbstractRange}, i, args...) = getindex(parent(ds)[ind], i, args...)
-@inline Base.setindex!(ds::DataSeries, x::AbstractArray, ind::Union{Int,IndexLinear,AbstractRange}) = copy!(parent(ds)[ind], x)
+@inline Base.getindex(ds::DataSeries, ind::Union{Int, IndexLinear, AbstractRange}, i, args...) = getindex(
+    parent(ds)[ind], i, args...)
+@inline Base.setindex!(ds::DataSeries, x::AbstractArray, ind::Union{Int, IndexLinear, AbstractRange}) = copy!(
+    parent(ds)[ind], x)
 
-@inline function Base.getindex(ds::DataSeries, ::Colon, j::Union{Int,CartesianIndex})
+@inline function Base.getindex(ds::DataSeries, ::Colon, j::Union{Int, CartesianIndex})
     OffsetArray([ds[i][j] for i in eachindex(ds)], eachindex(ds))
 end
 
@@ -50,12 +51,13 @@ Base.:(==)(ds1::DataSeries, ds2::DataSeries) = parent(ds1) == parent(ds2)
 
 GeometricBase.reset!(ds::DataSeries) = ds[begin] = ds[end]
 
-function Base.show(io::IO, ds::DS) where {DT, AT <: AbstractArray{DT}, DS <: DataSeries{DT,AT}}
+function Base.show(
+        io::IO, ds::DS) where {DT, AT <: AbstractArray{DT}, DS <: DataSeries{DT, AT}}
     print(io, "$(DS) with data type ", DT, " and array type ", AT, "\n")
     print(io, parent(parent(ds)))
 end
 
-function Base.show(io::IO, ds::DS) where {DT, DS <: DataSeries{DT,DT}}
+function Base.show(io::IO, ds::DS) where {DT, DS <: DataSeries{DT, DT}}
     print(io, "$(DS) with data type ", DT, "\n")
     print(io, parent(parent(ds)))
 end
@@ -64,14 +66,17 @@ function Base.zero(ds::DataSeries)
     DataSeries(zero(ds[begin]), ntime(ds))
 end
 
+_vec(x::AbstractArray) = vec(x)
+_vec(x::Number) = [x]
+
 function Base.Array(ds::DataSeries)
     nt = ntime(ds)
-    nd = length(vec(ds[begin]))
-    z = zeros(nt,nd)
-    for (i,elem) in enumerate(ds)
-        z[i,:] .= vec(elem)
-    end 
-    Array(z')
+    nd = length(_vec(ds[begin]))
+    z = zeros(eltype(ds), nd, nt + 1)
+    for (i, elem) in enumerate(ds)
+        z[:, i] .= _vec(elem)
+    end
+    return z
 end
 
 function relative_maximum_error(ds::DataSeries, ref::DataSeries)

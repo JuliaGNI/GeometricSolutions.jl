@@ -1,7 +1,7 @@
 """
 `EnsembleSolution`: Collection of all solutions of an `EnsembleProblem`.
 """
-struct EnsembleSolution{dType, tType, sType, probType} <: AbstractSolution{dType,tType}
+struct EnsembleSolution{dType, tType, sType, probType} <: AbstractSolution{dType, tType}
     t::TimeSeries{tType}
     s::sType
 
@@ -10,13 +10,18 @@ struct EnsembleSolution{dType, tType, sType, probType} <: AbstractSolution{dType
     function EnsembleSolution(problem::EnsembleProblem, step::Int = 1)
         t = TimeSeries(tbegin(problem), tend(problem), tstep(problem))
         s = [GeometricSolution(t, p, step) for p in problem]
-        
+
         new{datatype(problem), timetype(problem), typeof(s), typeof(problem)}(t, s, problem)
     end
 end
 
+@inline Base.keys(sol::EnsembleSolution) = keys(sol[begin])
+
 @inline GeometricBase.nsamples(sol::EnsembleSolution) = length(sol.s)
 @inline GeometricBase.eachsample(sol::EnsembleSolution) = 1:nsamples(sol)
+
+@inline GeometricBase.datatype(sol::EnsembleSolution{DT, TT}) where {DT, TT} = DT
+@inline GeometricBase.timetype(sol::EnsembleSolution{DT, TT}) where {DT, TT} = TT
 
 @inline GeometricBase.tspan(sol::EnsembleSolution) = tspan(sol.t)
 @inline GeometricBase.tstep(sol::EnsembleSolution) = tstep(sol.t)
@@ -32,7 +37,14 @@ Base.firstindex(sol::EnsembleSolution) = firstindex(sol.s)
 Base.lastindex(sol::EnsembleSolution) = lastindex(sol.s)
 
 Base.length(sol::EnsembleSolution) = length(sol.s)
-Base.iterate(sol::EnsembleSolution, i=1) = i > length(sol) ? nothing : (solution(sol, i), i+1)
+function Base.iterate(sol::EnsembleSolution, i = 1)
+    i > length(sol) ? nothing : (solution(sol, i), i + 1)
+end
+
+function arrays(solutions::EnsembleSolution)
+    z = (hcat((Array(sol[k]) for sol in solutions)...) for k in keys(solutions))
+    NamedTuple{keys(solutions)}(z)
+end
 
 function relative_maximum_error(sols::EnsembleSolution, refs::EnsembleSolution)
     @assert nsamples(sols) == nsamples(refs)
