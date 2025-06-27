@@ -20,12 +20,12 @@ const nstep = 10
     @test step(sol1) == sol1.step == 1
     @test ntime(sol1) == ntime(sol1.t)
     @test nstore(sol1) == sol1.nstore == ntime(sol1.t)
-    @test timesteps(sol1) == collect(tbegin(prob):timestep(prob):tend(prob))
+    @test timesteps(sol1) == collect(initialtime(prob):timestep(prob):finaltime(prob))
 
     @test step(sol2) == sol2.step == 10
     @test ntime(sol2) == ntime(sol2.t)
     @test nstore(sol2) == sol2.nstore == div(ntime(sol2), nstep)
-    @test timesteps(sol2) == collect(tbegin(prob):timestep(prob):tend(prob))
+    @test timesteps(sol2) == collect(initialtime(prob):timestep(prob):finaltime(prob))
 
     @test sol1[0].t == initial_conditions(prob).t
     @test sol1[0].q == initial_conditions(prob).q
@@ -65,10 +65,10 @@ end
     @test esol1.t == esol2.t
 
     @test ntime(esol1) == ntime(esol1.t)
-    @test timesteps(esol1) == collect(tbegin(probs):timestep(probs):tend(probs))
+    @test timesteps(esol1) == collect(initialtime(probs):timestep(probs):finaltime(probs))
 
     @test ntime(esol2) == ntime(esol2.t)
-    @test timesteps(esol2) == collect(tbegin(probs):timestep(probs):tend(probs))
+    @test timesteps(esol2) == collect(initialtime(probs):timestep(probs):finaltime(probs))
 
     @test esol1[1] == solution(esol1, 1)
     @test esol1[begin] == solution(esol1, 1)

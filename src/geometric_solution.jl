@@ -49,7 +49,7 @@ mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <:
 end
 
 function GeometricSolution(problem::GeometricProblem, args...)
-    t = TimeSeries(tbegin(problem), tend(problem), tstep(problem))
+    t = TimeSeries(initialtime(problem), finaltime(problem), timestep(problem))
     GeometricSolution(t, problem, args...)
 end
 
@@ -60,8 +60,8 @@ end
 @inline GeometricBase.datatype(sol::GeometricSolution{DT, TT}) where {DT, TT} = DT
 @inline GeometricBase.timetype(sol::GeometricSolution{DT, TT}) where {DT, TT} = TT
 
-@inline GeometricBase.tspan(sol::GeometricSolution) = tspan(sol.t)
-@inline GeometricBase.tstep(sol::GeometricSolution) = tstep(sol.t)
+@inline GeometricBase.timespan(sol::GeometricSolution) = timespan(sol.t)
+@inline GeometricBase.timestep(sol::GeometricSolution) = timestep(sol.t)
 
 @inline GeometricBase.ntime(sol::GeometricSolution) = ntime(sol.t)
 @inline GeometricBase.timesteps(sol::GeometricSolution) = sol.t

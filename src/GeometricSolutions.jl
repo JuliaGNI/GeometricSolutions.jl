@@ -8,10 +8,12 @@ using Base: TwicePrecision
 using OffsetArrays: OffsetArray, OffsetVector
 
 import GeometricBase: AbstractSolution
+import GeometricBase: initialtime, finaltime, timespan
 import GeometricBase: eachtimestep, timestep, timesteps
 
 export AbstractSolution
-export arrtype, nstore, ntime, tbegin, tend
+export arrtype, nstore, ntime
+export initialtime, finaltime, timespan
 export eachtimestep, timestep, timesteps
 export maximum_error, relative_maximum_error, relative_norm_error
 

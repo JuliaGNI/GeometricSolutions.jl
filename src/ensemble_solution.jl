@@ -8,7 +8,7 @@ struct EnsembleSolution{dType, tType, sType, probType} <: AbstractSolution{dType
     problem::probType
 
     function EnsembleSolution(problem::EnsembleProblem, step::Int = 1)
-        t = TimeSeries(tbegin(problem), tend(problem), tstep(problem))
+        t = TimeSeries(initialtime(problem), finaltime(problem), timestep(problem))
         s = [GeometricSolution(t, p, step) for p in problem]
 
         new{datatype(problem), timetype(problem), typeof(s), typeof(problem)}(t, s, problem)
@@ -23,8 +23,8 @@ end
 @inline GeometricBase.datatype(sol::EnsembleSolution{DT, TT}) where {DT, TT} = DT
 @inline GeometricBase.timetype(sol::EnsembleSolution{DT, TT}) where {DT, TT} = TT
 
-@inline GeometricBase.tspan(sol::EnsembleSolution) = tspan(sol.t)
-@inline GeometricBase.tstep(sol::EnsembleSolution) = tstep(sol.t)
+@inline GeometricBase.timespan(sol::EnsembleSolution) = timespan(sol.t)
+@inline GeometricBase.timestep(sol::EnsembleSolution) = timestep(sol.t)
 
 @inline GeometricBase.ntime(sol::EnsembleSolution) = ntime(sol.t)
 @inline GeometricBase.timesteps(sol::EnsembleSolution) = sol.t

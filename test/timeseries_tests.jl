@@ -44,8 +44,10 @@ using Test
     @test eachindex(IndexLinear(), ts) == 0:nt
     @test eachindex(IndexCartesian(), ts) == CartesianIndices((0:nt,))
 
-    @test tbegin(ts) == ts[0] == ts[begin] == ttbeg
-    @test tend(ts) == ts[nt] == ts[end] == ttend
+    @test initialtime(ts) == ts[0] == ts[begin] == ttbeg
+    @test finaltime(ts) == ts[nt] == ts[end] == ttend
+    @test timespan(ts) == (ttbeg, ttend)
+    @test timestep(ts) == Δt
 
     @test ts == vec(ti)
     @test vec(ti) == ts

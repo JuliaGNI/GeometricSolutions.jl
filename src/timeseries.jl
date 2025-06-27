@@ -43,8 +43,8 @@ end
 
 @inline Base.getindex(ts::TimeSeries, args...) = getindex(parent(ts), args...)
 
-@inline GeometricBase.tspan(ts::TimeSeries) = (ts[begin], ts[end])
-@inline GeometricBase.tstep(ts::TimeSeries) = ts.Δt
+@inline GeometricBase.timespan(ts::TimeSeries) = (ts[begin], ts[end])
+@inline GeometricBase.timestep(ts::TimeSeries) = ts.Δt
 
 @inline GeometricBase.ntime(ts::TimeSeries) = ts.n
 @inline GeometricBase.eachtimestep(ts::TimeSeries) = Base.OneTo(ntime(ts))
