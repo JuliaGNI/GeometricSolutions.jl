@@ -17,8 +17,8 @@ Contains all fields necessary to store the solution of a GeometricProblem.
 GeometricSolution(problem, step = 1)
 ```
 
-The usual way to initialise a `Solution` is by passing a [`GeometricProblem`](@ref), which
-can for example be an [`ODEProblem`](@ref) or [`PODEProblem`](@ref).
+The usual way to initialise a `Solution` is by passing a [`GeometricEquations.EquationProblem`](@extref), which
+can for example be an [`GeometricEquations.ODEProblem`](@extref) or [`GeometricEquations.PODEProblem`](@extref).
 The optional parameter `step` determines the intervals for storing the solution,
 i.e., if `step > 1` only every `step`'th solution is actually stored.
 

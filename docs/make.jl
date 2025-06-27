@@ -1,5 +1,10 @@
 using GeometricSolutions
 using Documenter
+using DocumenterInterLinks
+
+links = InterLinks(
+    "GeometricEquations" => "https://JuliaGNI.github.io/GeometricEquations.jl/stable/",
+)
 
 DocMeta.setdocmeta!(GeometricSolutions, :DocTestSetup, :(using GeometricSolutions); recursive=true)
 
@@ -13,6 +18,7 @@ makedocs(;
         canonical="https://JuliaGNI.github.io/GeometricSolutions.jl",
         assets=String[],
     ),
+    plugins=[links],
     pages=[
         "Home" => "index.md",
     ],
