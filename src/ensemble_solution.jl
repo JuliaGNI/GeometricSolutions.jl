@@ -105,11 +105,17 @@ function Base.iterate(sol::EnsembleSolution, i = 1)
     i > length(sol) ? nothing : (solution(sol, i), i + 1)
 end
 
+"""
+Convert solutions to arrays for analysis
+"""
 function arrays(solutions::EnsembleSolution)
     z = (hcat((Array(sol[k]) for sol in solutions)...) for k in keys(solutions))
     NamedTuple{keys(solutions)}(z)
 end
 
+"""
+Compute the relative maximum error between two ensemble solutions.
+"""
 function relative_maximum_error(sols::EnsembleSolution, refs::EnsembleSolution)
     @assert nsamples(sols) == nsamples(refs)
 
