@@ -1,5 +1,69 @@
 """
-`EnsembleSolution`: Collection of all solutions of an `EnsembleProblem`.
+`EnsembleSolution`: Collection of solutions for an ensemble of geometric differential equations
+
+Contains all fields necessary to store the solutions of an [`EnsembleProblem`](@extref GeometricEquations.EnsembleProblem),
+which represents multiple instances of a geometric differential equation with different initial conditions
+and/or parameters. Each solution in the ensemble is stored as a [`GeometricSolution`](@ref).
+
+### Fields
+
+* `t`: common time series shared across all solutions in the ensemble
+* `s`: vector of [`GeometricSolution`](@ref) objects, one for each problem instance
+* `problem`: the original [`EnsembleProblem`](@extref GeometricEquations.EnsembleProblem)
+
+### Type Parameters
+
+* `dType`: data type for solution values (e.g., `Float64`)
+* `tType`: data type for time values (e.g., `Float64`)
+* `sType`: type of the solution vector
+* `probType`: type of the ensemble problem
+
+### Constructor
+
+```julia
+EnsembleSolution(problem::EnsembleProblem, step::Int = 1)
+```
+
+Creates an `EnsembleSolution` from an [`EnsembleProblem`](@extref GeometricEquations.EnsembleProblem).
+The optional parameter `step` determines the intervals for storing each solution,
+i.e., if `step > 1` only every `step`'th solution point is stored for each ensemble member.
+
+### Usage
+
+An `EnsembleSolution` can be iterated over to access individual solutions:
+
+```julia
+for sol in ensemble_solution
+    # sol is a GeometricSolution
+    process_solution(sol)
+end
+```
+
+Individual solutions can be accessed by index:
+
+```julia
+first_solution = ensemble_solution[1]
+last_solution = ensemble_solution[end]
+```
+
+The number of solutions in the ensemble:
+
+```julia
+n_solutions = nsamples(ensemble_solution)
+```
+
+Convert all solutions to arrays for analysis:
+
+```julia
+solution_arrays = arrays(ensemble_solution)
+```
+
+### See Also
+
+* [`GeometricSolution`](@ref): Individual solution type
+* [`EnsembleProblem`](@extref GeometricEquations.EnsembleProblem): Ensemble problem type
+* [`arrays`](@ref): Convert solutions to arrays for analysis
+* [`relative_maximum_error`](@ref): Compare ensemble solutions
 """
 struct EnsembleSolution{dType, tType, sType, probType} <: AbstractSolution{dType, tType}
     t::TimeSeries{tType}
