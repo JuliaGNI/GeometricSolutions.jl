@@ -37,7 +37,8 @@ export EnsembleSolution, solution
 
 include("diagnostics.jl")
 
-export compute_invariant, compute_invariant_error, compute_error_drift
+export compute_invariant, compute_invariant_error
+export compute_difference, compute_error_drift, compute_relative_error
 
 const SolutionODE{dType, tType, dsType, probType, perType} = GeometricSolution{
     dType, tType, dsType, probType,

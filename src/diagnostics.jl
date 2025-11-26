@@ -12,6 +12,22 @@ function relative_maximum_error(sol, ref)
 end
 
 """
+Computes the difference of two DataSeries.
+
+Arguments: `(x::DataSeries{DT}, y::DataSeries{DT})`
+
+Returns a DataSeries similar to `x` and `y` holding the time series of the difference between `x` and `y`.
+"""
+function compute_difference(x::DataSeries{DT}, y::DataSeries{DT}) where {DT}
+    @assert axes(x) == axes(y)
+
+    e = zero(x)
+    parent(e) .= parent(x) .- parent(y)
+
+    return e
+end
+
+"""
 Takes a ScalarDataSeries holding an invariant and computes the relative error `(inv(t)-inv(0))/inv(0)`.
 
 Returns a ScalarDataSeries similar to the argument holding the time series of the relativ errors.

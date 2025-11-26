@@ -14,6 +14,13 @@ q = OffsetArray([rand(dt, nd) for _ in 1:(nt + 1)], 0:nt)
 p = OffsetArray([rand(dt, nd) for _ in 1:(nt + 1)], 0:nt)
 p = OffsetArray([ones(dt, nd) for _ in 1:(nt + 1)], 0:nt)
 
+# Error and Differences
+qs = DataSeries(q)
+ps = DataSeries(p)
+df = compute_difference(qs, ps)
+
+@test df == DataSeries(q .- p)
+
 # Invariants for ODE solutions
 ts = TimeSeries(0.0, 1.0, 1.0 / nt)
 qs = DataSeries(q)
