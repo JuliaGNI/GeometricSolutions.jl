@@ -35,6 +35,10 @@ include("ensemble_solution.jl")
 
 export EnsembleSolution, solution
 
+include("diagnostics.jl")
+
+export compute_invariant, compute_invariant_error, compute_error_drift
+
 const SolutionODE{dType, tType, dsType, probType, perType} = GeometricSolution{
     dType, tType, dsType, probType,
     perType} where {probType <: Union{ODEProblem, SODEProblem, SubstepProblem}}
