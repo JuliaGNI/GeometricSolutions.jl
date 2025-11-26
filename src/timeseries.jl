@@ -4,7 +4,7 @@ struct TimeSeries{T, OT <: OffsetVector{T}} <: AbstractVector{T}
     Δt::T
 
     function TimeSeries(ti::AbstractVector, Δt::T) where {T <: Real}
-        n = length(ti)-1
+        n = length(ti) - 1
         t = OffsetVector(ti, 0:n)
         new{T, typeof(t)}(n, t, Δt)
     end
@@ -15,7 +15,7 @@ function TimeSeries(tbegin::T, tend::T, Δt::T) where {T <: Real}
 end
 
 function TimeSeries(n::Integer, Δt::T) where {T}
-    TimeSeries(zero(Δt), n*Δt, Δt)
+    TimeSeries(zero(Δt), n * Δt, Δt)
 end
 
 function TimeSeries(t::AbstractVector)
@@ -49,6 +49,10 @@ end
 @inline GeometricBase.ntime(ts::TimeSeries) = ts.n
 @inline GeometricBase.eachtimestep(ts::TimeSeries) = Base.OneTo(ntime(ts))
 
-Base.:(==)(ts1::TimeSeries, ts2::TimeSeries) = (ts1.n == ts2.n && ts1.t == ts2.t && ts1.Δt == ts2.Δt)
-Base.:(==)(ts::TimeSeries{T1}, vec::AbstractVector{T2}) where {T1,T2} = (T1 == T2 && collect(parent(parent(ts))) == vec)
+function Base.:(==)(ts1::TimeSeries, ts2::TimeSeries)
+    (ts1.n == ts2.n && ts1.t == ts2.t && ts1.Δt == ts2.Δt)
+end
+function Base.:(==)(ts::TimeSeries{T1}, vec::AbstractVector{T2}) where {T1, T2}
+    (T1 == T2 && collect(parent(parent(ts))) == vec)
+end
 Base.:(==)(vec::AbstractVector, ts::TimeSeries) = (ts == vec)
