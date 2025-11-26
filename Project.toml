@@ -1,6 +1,6 @@
 name = "GeometricSolutions"
 uuid = "7843afe4-64f4-4df4-9231-049495c56661"
-version = "0.5.4"
+version = "0.5.5"
 authors = ["Michael Kraus"]
 
 [deps]
