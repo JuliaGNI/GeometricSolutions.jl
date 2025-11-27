@@ -53,11 +53,11 @@ corresponding value of the invariant.
 Returns a ScalarDataSeries holding the time series of the invariant.
 """
 function compute_invariant(
-        t::TimeSeries, q::DataSeries{T}, invariant::Base.Callable) where {T}
+        t::TimeSeries, q::DataSeries{T}, parameters::NamedTuple, invariant::Base.Callable) where {T}
     invds = DataSeries(T, ntime(q))
     try
         for i in eachindex(invds)
-            invds[i] = invariant(t[i], q[i])
+            invds[i] = invariant(t[i], q[i], parameters)
         end
     catch ex
         if isa(ex, DomainError)
@@ -79,12 +79,13 @@ corresponding value of the invariant.
 
 Returns a ScalarDataSeries holding the time series of the invariant.
 """
-function compute_invariant(t::TimeSeries, q::DataSeries{T}, p::DataSeries{T},
-        invariant::Base.Callable) where {T}
+function compute_invariant(
+        t::TimeSeries, q::DataSeries{T}, p::DataSeries{T},
+        parameters::NamedTuple, invariant::Base.Callable) where {T}
     invds = DataSeries(T, ntime(q))
     try
         for i in eachindex(invds)
-            invds[i] = invariant(t[i], q[i], p[i])
+            invds[i] = invariant(t[i], q[i], p[i], parameters)
         end
     catch ex
         if isa(ex, DomainError)
@@ -106,8 +107,9 @@ corresponding value of the invariant.
 
 Returns a tuple of two 1d DataSeries holding the time series of the invariant and the relativ error, respectively.
 """
-function compute_invariant_error(t::TimeSeries, q::DataSeries, invariant::Base.Callable)
-    invds = compute_invariant(t, q, invariant)
+function compute_invariant_error(
+        t::TimeSeries, q::DataSeries, parameters::NamedTuple, invariant::Base.Callable)
+    invds = compute_invariant(t, q, parameters, invariant)
     errds = compute_relative_error(invds)
     (invds, errds)
 end
@@ -122,9 +124,10 @@ corresponding value of the invariant.
 
 Returns a tuple of two ScalarDataSeries holding the time series of the invariant and the relativ error, respectively.
 """
-function compute_invariant_error(t::TimeSeries, q::DataSeries{T}, p::DataSeries{T},
-        invariant::Base.Callable) where {T}
-    invds = compute_invariant(t, q, p, invariant)
+function compute_invariant_error(
+        t::TimeSeries, q::DataSeries{T}, p::DataSeries{T},
+        parameters::NamedTuple, invariant::Base.Callable) where {T}
+    invds = compute_invariant(t, q, p, parameters, invariant)
     errds = compute_relative_error(invds)
     (invds, errds)
 end

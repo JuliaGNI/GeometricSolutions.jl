@@ -8,13 +8,14 @@ dt = Float64
 nt = 10
 nd = 2
 
-invariant(t, q) = norm(q)
-invariant(t, q, p) = norm(q) + norm(p)
+invariant(t, q, params) = norm(q)
+invariant(t, q, p, params) = norm(q) + norm(p)
 
 q = OffsetArray([rand(dt, nd) for _ in 1:(nt + 1)], 0:nt)
 p = OffsetArray([rand(dt, nd) for _ in 1:(nt + 1)], 0:nt)
 p = OffsetArray([ones(dt, nd) for _ in 1:(nt + 1)], 0:nt)
 v = OffsetArray([ones(dt, nd) for _ in 1:(nt + 1)], 0:nt)
+params = OffsetArray([NamedTuple() for _ in 1:(nt + 1)], 0:nt)
 
 # Error and Differences
 qs = DataSeries(q)
@@ -26,8 +27,8 @@ df = compute_difference(qs, ps)
 # Invariants for ODE solutions
 ts = TimeSeries(0.0, 1.0, 1.0 / nt)
 qs = DataSeries(q)
-ti = compute_invariant(ts, qs, invariant)
-tie, te = compute_invariant_error(ts, qs, invariant)
+ti = compute_invariant(ts, qs, NamedTuple(), invariant)
+tie, te = compute_invariant_error(ts, qs, NamedTuple(), invariant)
 tdt, td = compute_error_drift(ts, te, 1)
 
 @test typeof(ti) <: ScalarDataSeries{dt}
@@ -35,7 +36,7 @@ tdt, td = compute_error_drift(ts, te, 1)
 @test typeof(tie) <: ScalarDataSeries{dt}
 @test typeof(td) <: ScalarDataSeries{dt}
 
-@test parent(ti) == invariant.(parent(ts), parent(qs))
+@test parent(ti) == invariant.(parent(ts), parent(qs), params)
 @test parent(ti) == parent(tie)
 @test all(te .== (parent(ti) .- ti[begin]) ./ ti[begin])
 @test parent(ts) == parent(tdt)
@@ -49,8 +50,8 @@ tdt, td = compute_error_drift(ts, te, 2)
 ts = TimeSeries(0.0, 1.0, 1.0 / nt)
 qs = DataSeries(q)
 ps = DataSeries(p)
-ti = compute_invariant(ts, qs, ps, invariant)
-tie, te = compute_invariant_error(ts, qs, ps, invariant)
+ti = compute_invariant(ts, qs, ps, NamedTuple(), invariant)
+tie, te = compute_invariant_error(ts, qs, ps, NamedTuple(), invariant)
 tdt, td = compute_error_drift(ts, te, 1)
 
 @test typeof(ti) <: ScalarDataSeries{dt}
@@ -58,7 +59,7 @@ tdt, td = compute_error_drift(ts, te, 1)
 @test typeof(tie) <: ScalarDataSeries{dt}
 @test typeof(td) <: ScalarDataSeries{dt}
 
-@test parent(ti) == invariant.(parent(ts), parent(qs), parent(ps))
+@test parent(ti) == invariant.(parent(ts), parent(qs), parent(ps), params)
 @test parent(ti) == parent(tie)
 @test all(te .== (parent(ti) .- ti[begin]) ./ ti[begin])
 @test parent(ts) == parent(tdt)
