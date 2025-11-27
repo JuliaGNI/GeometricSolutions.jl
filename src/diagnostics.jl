@@ -53,7 +53,8 @@ corresponding value of the invariant.
 Returns a ScalarDataSeries holding the time series of the invariant.
 """
 function compute_invariant(
-        t::TimeSeries, q::DataSeries{T}, parameters::NamedTuple, invariant::Base.Callable) where {T}
+        t::TimeSeries, q::DataSeries{T}, parameters::OptionalParameters,
+        invariant::Base.Callable) where {T}
     invds = DataSeries(T, ntime(q))
     try
         for i in eachindex(invds)
@@ -81,7 +82,7 @@ Returns a ScalarDataSeries holding the time series of the invariant.
 """
 function compute_invariant(
         t::TimeSeries, q::DataSeries{T}, p::DataSeries{T},
-        parameters::NamedTuple, invariant::Base.Callable) where {T}
+        parameters::OptionalParameters, invariant::Base.Callable) where {T}
     invds = DataSeries(T, ntime(q))
     try
         for i in eachindex(invds)
@@ -108,7 +109,7 @@ corresponding value of the invariant.
 Returns a tuple of two 1d DataSeries holding the time series of the invariant and the relativ error, respectively.
 """
 function compute_invariant_error(
-        t::TimeSeries, q::DataSeries, parameters::NamedTuple, invariant::Base.Callable)
+        t::TimeSeries, q::DataSeries, parameters::OptionalParameters, invariant::Base.Callable)
     invds = compute_invariant(t, q, parameters, invariant)
     errds = compute_relative_error(invds)
     (invds, errds)
@@ -126,7 +127,7 @@ Returns a tuple of two ScalarDataSeries holding the time series of the invariant
 """
 function compute_invariant_error(
         t::TimeSeries, q::DataSeries{T}, p::DataSeries{T},
-        parameters::NamedTuple, invariant::Base.Callable) where {T}
+        parameters::OptionalParameters, invariant::Base.Callable) where {T}
     invds = compute_invariant(t, q, p, parameters, invariant)
     errds = compute_relative_error(invds)
     (invds, errds)
