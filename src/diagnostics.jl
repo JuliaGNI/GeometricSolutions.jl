@@ -22,7 +22,9 @@ function compute_difference(x::DataSeries{DT}, y::DataSeries{DT}) where {DT}
     @assert axes(x) == axes(y)
 
     e = zero(x)
-    parent(e) .= parent(x) .- parent(y)
+    for i in eachindex(e, x, y)
+        e[i] .= x[i] .- y[i]
+    end
 
     return e
 end
@@ -157,4 +159,50 @@ function compute_error_drift(t::TimeSeries, invariant_error::ScalarDataSeries{T}
     end
 
     (TimeSeries(Tdrift, (t[end] - t[begin]) / nint), Idrift)
+end
+
+"""
+Compute the one-form (symplectic potential) for the solution of a Lagrangian system.
+
+Arguments: `(sol::GeometricSolution)`
+
+The problem type of the solution must be a subtype of `IODEProblem`, `LODEProblem`, `IDAEProblem`, or `LDAEProblem`.
+
+Returns a DataSeries similar to `sol.p` holding the time series of the one-form.
+"""
+function compute_one_form(sol::GeometricSolution{
+        dType, tType, dsType, probType,
+        perType}) where {dType, tType, dsType,
+        perType, probType <: Union{IODEProblem, LODEProblem, IDAEProblem, LDAEProblem}}
+    ϑ = zero(sol.p)
+
+    try
+        for n in axes(ϑ, 1)
+            functions(sol.problem).ϑ(
+                ϑ[n], sol.t[n], sol.q[n], sol.v[n], parameters(sol.problem))
+        end
+    catch ex
+        if isa(ex, DomainError)
+            @warn("DOMAIN ERROR: One-form diagnostics crashed.")
+        else
+            throw(ex)
+        end
+    end
+    return ϑ
+end
+
+"""
+Computes the difference of the momentum and the one-form of an implicit ODE or DAE system.
+
+Arguments: `(sol::GeometricSolution)`
+
+The problem type of the solution must be a subtype of `IODEProblem`, `LODEProblem`, `IDAEProblem`, or `LDAEProblem`.
+
+Returns a DataSeries similar to `sol.p` holding the time series of the difference between the momentum and the one-form.
+"""
+function compute_momentum_error(sol::GeometricSolution{
+        dType, tType, dsType, probType,
+        perType}) where {dType, tType, dsType,
+        perType, probType <: Union{IODEProblem, LODEProblem, IDAEProblem, LDAEProblem}}
+    compute_difference(sol.p, compute_one_form(sol))
 end
