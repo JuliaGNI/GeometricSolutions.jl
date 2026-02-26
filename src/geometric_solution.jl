@@ -99,7 +99,6 @@ function Base.getindex(sol::GeometricSolution, n::Int)
 end
 
 function Base.setindex!(sol::GeometricSolution, s::NamedTuple, n::Int)
-    @assert keys(sol) ⊆ keys(s)
     @assert n ≤ ntime(sol)
 
     if mod(n, step(sol)) == 0
@@ -112,12 +111,12 @@ function Base.setindex!(sol::GeometricSolution, s::NamedTuple, n::Int)
 end
 
 function Base.setindex!(sol::GeometricSolution, s::State, n::Int)
-    @assert keys(sol) ⊆ keys(s)
+    @assert Val.(keys(sol)) ⊆ keys(s)
     @assert n ≤ ntime(sol)
 
     if mod(n, step(sol)) == 0
-        for k in keys(sol) ∩ keys(s)
-            sol[Val(k)][div(n, step(sol))] = s[Val(k)]
+        for k in keys(sol)
+            sol[k][div(n, step(sol))] = s[Val(k)]
         end
     end
 
