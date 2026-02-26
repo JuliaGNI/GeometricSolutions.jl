@@ -175,8 +175,8 @@ The problem type of the solution must be a subtype of `IODEProblem`, `LODEProble
 Returns a DataSeries similar to `sol.p` holding the time series of the one-form.
 """
 function compute_one_form(sol::GeometricSolution{
-        dType, tType, dsType, probType,
-        perType}) where {dType, tType, dsType,
+        dType, tType, tsType, dsType, probType,
+        perType}) where {dType, tType, tsType, dsType,
         perType, probType <: Union{IODEProblem, LODEProblem, IDAEProblem, LDAEProblem}}
     ϑ = zero(sol.p)
 
@@ -205,8 +205,8 @@ The problem type of the solution must be a subtype of `IODEProblem`, `LODEProble
 Returns a DataSeries similar to `sol.p` holding the time series of the difference between the momentum and the one-form.
 """
 function compute_momentum_error(sol::GeometricSolution{
-        dType, tType, dsType, probType,
-        perType}) where {dType, tType, dsType,
+        dType, tType, tsType, dsType, probType,
+        perType}) where {dType, tType, tsType, dsType,
         perType, probType <: Union{IODEProblem, LODEProblem, IDAEProblem, LDAEProblem}}
     compute_difference(sol.p, compute_one_form(sol))
 end

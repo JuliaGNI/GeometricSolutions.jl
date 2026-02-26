@@ -23,9 +23,10 @@ The optional parameter `step` determines the intervals for storing the solution,
 i.e., if `step > 1` only every `step`'th solution is actually stored.
 
 """
-mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <:
+mutable struct GeometricSolution{
+    dType, tType, tsType <: TimeSeries{tType}, dsType <: NamedTuple, probType, perType} <:
                AbstractSolution{dType, tType}
-    t::TimeSeries{tType}
+    t::tsType
     s::dsType
 
     problem::probType
@@ -41,7 +42,7 @@ mutable struct GeometricSolution{dType, tType, dsType, probType, perType} <:
         s = NamedTuple{keys(problem.ics)}(Tuple(DataSeries(x, nstore) for x in problem.ics))
         period = _periodicity(s, periodicity(problem))
         sol = new{datatype(problem), timetype(problem),
-            typeof(s), typeof(problem), typeof(period)}(
+            typeof(t), typeof(s), typeof(problem), typeof(period)}(
             t, s, problem, period, step, nstore, 0)
         sol[0] = initial_conditions(problem)
         return sol
@@ -53,52 +54,70 @@ function GeometricSolution(problem::GeometricProblem, args...)
     GeometricSolution(t, problem, args...)
 end
 
-@inline Base.keys(sol::GeometricSolution) = keys(sol.s)
-@inline Base.step(sol::GeometricSolution) = sol.step
-@inline nstore(sol::GeometricSolution) = sol.nstore
+Base.keys(sol::GeometricSolution) = keys(sol.s)
+Base.step(sol::GeometricSolution) = sol.step
+nstore(sol::GeometricSolution) = sol.nstore
 
-@inline GeometricBase.datatype(sol::GeometricSolution{DT, TT}) where {DT, TT} = DT
-@inline GeometricBase.timetype(sol::GeometricSolution{DT, TT}) where {DT, TT} = TT
+GeometricBase.datatype(sol::GeometricSolution{DT, TT}) where {DT, TT} = DT
+GeometricBase.timetype(sol::GeometricSolution{DT, TT}) where {DT, TT} = TT
 
-@inline GeometricBase.timespan(sol::GeometricSolution) = timespan(sol.t)
-@inline GeometricBase.timestep(sol::GeometricSolution) = timestep(sol.t)
+GeometricBase.solutions(sol::GeometricSolution) = sol.s
+GeometricBase.timesteps(sol::GeometricSolution) = sol.t
+GeometricBase.periodicity(sol::GeometricSolution) = sol.periodicity
 
-@inline GeometricBase.ntime(sol::GeometricSolution) = ntime(sol.t)
-@inline GeometricBase.timesteps(sol::GeometricSolution) = sol.t
-@inline GeometricBase.eachtimestep(sol::GeometricSolution) = eachtimestep(sol.t)
-@inline GeometricBase.periodicity(sol::GeometricSolution) = sol.periodicity
+GeometricBase.ntime(sol::GeometricSolution) = ntime(timesteps(sol))
+GeometricBase.timespan(sol::GeometricSolution) = timespan(timesteps(sol))
+GeometricBase.timestep(sol::GeometricSolution) = timestep(timesteps(sol))
+GeometricBase.eachtimestep(sol::GeometricSolution) = eachtimestep(timesteps(sol))
 
-@inline function Base.hasproperty(
-        ::GeometricSolution{DT, TT, dsType}, s::Symbol) where {DT, TT, dsType}
+Base.length(sol::GeometricSolution) = length(solutions(sol))
+Base.iterate(sol::GeometricSolution, args...) = iterate(solutions(sol), args...)
+
+function Base.hasproperty(
+        ::GeometricSolution{DT, TT, tsType, dsType}, s::Symbol) where {
+        DT, TT, tsType, dsType}
     hasfield(dsType, s) || hasfield(GeometricSolution, s)
 end
 
-@inline function Base.getproperty(
-        sol::GeometricSolution{DT, TT, dsType}, s::Symbol) where {DT, TT, dsType}
+function Base.getproperty(
+        sol::GeometricSolution{DT, TT, tsType, dsType}, s::Symbol) where {
+        DT, TT, tsType, dsType}
     if hasfield(dsType, s)
-        return getfield(sol, :s)[s]
+        return getfield(getfield(sol, :s), s)
     else
         return getfield(sol, s)
     end
 end
 
-function Base.getindex(sol::GeometricSolution, s::Symbol)
-    getfield(sol, :s)[s]
-end
+Base.getindex(sol::GeometricSolution, ::Val{s}) where {s} = getindex(getfield(sol, :s), s)
+Base.getindex(sol::GeometricSolution, s::Symbol) = getindex(sol, Val(s))
 
 function Base.getindex(sol::GeometricSolution, n::Int)
     @assert n ≤ ntime(sol)
-    NamedTuple{(:t, keys(sol.s)...)}((
-        timesteps(sol)[n], (sol.s[k][n] for k in keys(sol.s))...))
+    NamedTuple{(:t, keys(sol)...)}((
+        timesteps(sol)[n], (sol[Val(k)][n] for k in keys(sol))...))
 end
 
 function Base.setindex!(sol::GeometricSolution, s::NamedTuple, n::Int)
-    # @assert keys(sol.s) ⊆ keys(s)
+    @assert keys(sol) ⊆ keys(s)
     @assert n ≤ ntime(sol)
 
     if mod(n, step(sol)) == 0
-        for k in keys(sol.s) ∩ keys(s)
-            sol.s[k][div(n, step(sol))] = s[k]
+        for k in keys(sol) ∩ keys(s)
+            sol[Val(k)][div(n, step(sol))] = s[k]
+        end
+    end
+
+    return s
+end
+
+function Base.setindex!(sol::GeometricSolution, s::State, n::Int)
+    @assert keys(sol) ⊆ keys(s)
+    @assert n ≤ ntime(sol)
+
+    if mod(n, step(sol)) == 0
+        for k in keys(sol) ∩ keys(s)
+            sol[Val(k)][div(n, step(sol))] = s[Val(k)]
         end
     end
 
@@ -107,9 +126,10 @@ end
 
 function arrays(sol::GeometricSolution)
     NamedTuple{keys(sol)}((Array(sol[k]) for k in keys(sol)))
+    # map(s -> Array(s), sol)
 end
 
 function relative_maximum_error(sol::GeometricSolution, ref::GeometricSolution)
-    @assert keys(sol.s) == keys(ref.s)
-    NamedTuple{keys(sol.s)}(relative_maximum_error(s...) for s in zip(sol.s, ref.s))
+    @assert keys(sol) == keys(ref)
+    NamedTuple{keys(sol)}(relative_maximum_error(s...) for s in zip(sol.s, ref.s))
 end
