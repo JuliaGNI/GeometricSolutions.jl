@@ -115,8 +115,8 @@ function Base.setindex!(sol::GeometricSolution, s::State, n::Int)
     @assert n ≤ ntime(sol)
 
     if mod(n, step(sol)) == 0
-        for k in keys(sol)
-            sol[k][div(n, step(sol))] = s[Val(k)]
+        for k in Val.(keys(sol))
+            sol[k][div(n, step(sol))] = s[k]
         end
     end
 
