@@ -11,7 +11,7 @@ OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-GeometricBase = "0.12, 0.13"
+GeometricBase = "0.12, 0.13, 0.14"
 GeometricEquations = "0.20"
 LinearAlgebra = "1"
 OffsetArrays = "1"
