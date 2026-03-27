@@ -4,7 +4,7 @@ const AbstractData{DT} = Union{DT, AbstractArray{DT}}
 struct DataSeries{DT, AT <: AbstractData{DT}} <: AbstractVector{AT}
     d::OffsetVector{AT, Vector{AT}}
 
-    function DataSeries(v::AbstractVector{AT}) where {DT <: Real, AT <: AbstractData{DT}}
+    function DataSeries(v::AbstractVector{AT}) where {DT, AT <: AbstractData{DT}}
         ntime = length(v) - 1
         new{DT, AT}(OffsetVector(v, 0:ntime))
     end

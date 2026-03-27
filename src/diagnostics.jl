@@ -149,7 +149,7 @@ is oscillating such as the energy error of Hamiltonian systems with symplectic i
 function compute_error_drift(t::TimeSeries, invariant_error::ScalarDataSeries{T},
         interval_length = 100) where {T}
     @assert ntime(t) == ntime(invariant_error)
-    @assert mod(t.n, interval_length) == 0
+    @assert mod(ntime(t), interval_length) == 0
 
     nint = div(ntime(invariant_error), interval_length)
     Idrift = DataSeries(T, nint)
@@ -175,15 +175,15 @@ The problem type of the solution must be a subtype of `IODEProblem`, `LODEProble
 Returns a DataSeries similar to `sol.p` holding the time series of the one-form.
 """
 function compute_one_form(sol::GeometricSolution{
-        dType, tType, tsType, dsType, probType,
-        perType}) where {dType, tType, tsType, dsType,
+        dType, tType, tsType, dsType, stType, probType,
+        perType}) where {dType, tType, tsType, dsType, stType,
         perType, probType <: Union{IODEProblem, LODEProblem, IDAEProblem, LDAEProblem}}
     ϑ = zero(sol.p)
 
     try
         for n in axes(ϑ, 1)
             functions(sol.problem).ϑ(
-                ϑ[n], sol.t[n], sol.q[n], sol.v[n], parameters(sol.problem))
+                ϑ[n], sol[n].t, sol[n].q, sol[n].v, parameters(sol.problem))
         end
     catch ex
         if isa(ex, DomainError)
@@ -205,8 +205,8 @@ The problem type of the solution must be a subtype of `IODEProblem`, `LODEProble
 Returns a DataSeries similar to `sol.p` holding the time series of the difference between the momentum and the one-form.
 """
 function compute_momentum_error(sol::GeometricSolution{
-        dType, tType, tsType, dsType, probType,
-        perType}) where {dType, tType, tsType, dsType,
+        dType, tType, tsType, dsType, stType, probType,
+        perType}) where {dType, tType, tsType, dsType, stType,
         perType, probType <: Union{IODEProblem, LODEProblem, IDAEProblem, LDAEProblem}}
     compute_difference(sol.p, compute_one_form(sol))
 end

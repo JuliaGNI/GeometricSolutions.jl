@@ -13,39 +13,41 @@ const nstep = 10
     sol1 = GeometricSolution(prob)
     sol2 = GeometricSolution(prob, nstep)
 
-    @test sol1.t == sol2.t
-    @test sol1.s != sol2.s
+    @test sol1.timeser == sol2.timeser
+    @test sol1.dataser != sol2.dataser
     @test sol1.q == sol1[:q]
 
     @test step(sol1) == sol1.step == 1
-    @test ntime(sol1) == ntime(sol1.t)
-    @test nstore(sol1) == sol1.nstore == ntime(sol1.t)
+    @test ntime(sol1) == ntime(sol1.timeser)
+    @test nstore(sol1) == sol1.nstore == ntime(sol1.timeser)
     @test timesteps(sol1) == collect(initialtime(prob):timestep(prob):finaltime(prob))
 
     @test step(sol2) == sol2.step == 10
-    @test ntime(sol2) == ntime(sol2.t)
+    @test ntime(sol2) == ntime(sol2.timeser)
     @test nstore(sol2) == sol2.nstore == div(ntime(sol2), nstep)
     @test timesteps(sol2) == collect(initialtime(prob):timestep(prob):finaltime(prob))
 
-    @test sol1[0].t == initial_conditions(prob).t
-    @test sol1[0].q == initial_conditions(prob).q
+    @test sol1[0].t == initialstate(prob).t
+    @test sol1[0].q == initialstate(prob).q
 
     t = timesteps(sol1)
-    q = initial_conditions(prob).q
+    s = initialstate(prob)
     for i in eachtimestep(t)
-        x = zero(q)
-        Tests.ExponentialGrowth.solution(x, t[i], q, t[i - 1], parameters(prob))
-        sol1[i] = (q = x,)
-        sol2[i] = (q = x,)
+        q̄ = copy(s.q)
+        Tests.ExponentialGrowth.solution(s.q, t[i], q̄, t[i - 1], parameters(prob))
+        copy!(sol1, s, i)
+        copy!(sol2, s, i)
     end
 
-    @test sol1.s.q[ntime(t)] == sol2.s.q[div(ntime(t), nstep)] == sol1.s.q[end] ==
-          sol2.s.q[end]
+    @test sol1.q[ntime(t)] ==
+          sol2.q[div(ntime(t), nstep)] ==
+          sol1.q[end] ==
+          sol2.q[end]
 
     sol = GeometricSolution(prob)
     for n in eachtimestep(sol)
         Tests.ExponentialGrowth.solution(
-            sol.q[n], sol.t[n], sol.q[0], sol.t[0], parameters(prob))
+            sol[n].q, sol[n].t, sol[0].q, sol[0].t, parameters(prob))
     end
 
     @test relative_maximum_error(sol, sol).q == 0
@@ -84,7 +86,7 @@ end
     for (sol, prob) in zip(sols.s, probs)
         for n in eachtimestep(sol)
             Tests.ExponentialGrowth.solution(
-                sol.q[n], sol.t[n], sol.q[0], sol.t[0], parameters(prob))
+                sol[n].q, sol[n].t, sol[0].q, sol[0].t, parameters(prob))
         end
     end
 
