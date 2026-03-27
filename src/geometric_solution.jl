@@ -49,6 +49,10 @@ mutable struct GeometricSolution{
         states = [zero(ics) for _ in 0:nstore]
         statser = OffsetVector(states, 0:nstore)
 
+        for n in eachindex(statser)
+            statser[n].t = t[n*step]
+        end
+
         dats = Tuple(DataSeries([parent(states[i][k]) for i in eachindex(states)])
         for k in keys(ics))
         dataser = NamedTuple{keys(ics)}(dats)

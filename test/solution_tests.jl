@@ -30,6 +30,9 @@ const nstep = 10
     @test sol1[0].t == initialstate(prob).t
     @test sol1[0].q == initialstate(prob).q
 
+    @test sol1[1].t == initialstate(prob).t + timestep(prob)
+    @test sol2[1].t == initialstate(prob).t + timestep(prob) * nstep
+
     t = timesteps(sol1)
     s = initialstate(prob)
     for i in eachtimestep(t)
