@@ -16,6 +16,7 @@ export arrtype, nstore, ntime
 export initialtime, finaltime, timespan
 export eachtimestep, timestep, timesteps
 export maximum_error, relative_maximum_error, relative_norm_error
+export states, solutions
 
 include("utils.jl")
 
