@@ -50,7 +50,7 @@ mutable struct GeometricSolution{
         statser = OffsetVector(states, 0:nstore)
 
         for n in eachindex(statser)
-            statser[n].t = t[n*step]
+            statser[n].t = t[n * step]
         end
 
         dats = Tuple(DataSeries([parent(states[i][k]) for i in eachindex(states)])
@@ -91,6 +91,9 @@ GeometricBase.timestep(sol::GeometricSolution) = timestep(timesteps(sol))
 GeometricBase.eachtimestep(sol::GeometricSolution) = eachtimestep(timesteps(sol))
 
 GeometricBase.variables(sol::GeometricSolution, n::Int) = variables(sol[n])
+
+Base.firstindex(sol::GeometricSolution) = firstindex(states(sol))
+Base.lastindex(sol::GeometricSolution) = lastindex(states(sol))
 
 Base.length(sol::GeometricSolution) = length(solutions(sol))
 Base.iterate(sol::GeometricSolution, args...) = iterate(solutions(sol), args...)
