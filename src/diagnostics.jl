@@ -53,7 +53,7 @@ corresponding value of the invariant.
 Returns a ScalarDataSeries holding the time series of the invariant.
 """
 function compute_invariant(
-        t::TimeSeries, q::DataSeries{T}, parameters::OptionalParameters,
+        t::Union{TimeSeries{T}, ScalarDataSeries{T}}, q::DataSeries{T}, parameters::OptionalParameters,
         invariant::Base.Callable) where {T}
     invds = DataSeries(T, ntime(q))
     try
@@ -81,7 +81,7 @@ corresponding value of the invariant.
 Returns a ScalarDataSeries holding the time series of the invariant.
 """
 function compute_invariant(
-        t::TimeSeries, q::DataSeries{T}, p::DataSeries{T},
+        t::Union{TimeSeries{T}, ScalarDataSeries{T}}, q::DataSeries{T}, p::DataSeries{T},
         parameters::OptionalParameters, invariant::Base.Callable) where {T}
     invds = DataSeries(T, ntime(q))
     try
@@ -109,7 +109,7 @@ corresponding value of the invariant.
 Returns a tuple of two 1d DataSeries holding the time series of the invariant and the relativ error, respectively.
 """
 function compute_invariant_error(
-        t::TimeSeries, q::DataSeries, parameters::OptionalParameters, invariant::Base.Callable)
+        t::Union{TimeSeries, ScalarDataSeries}, q::DataSeries, parameters::OptionalParameters, invariant::Base.Callable)
     invds = compute_invariant(t, q, parameters, invariant)
     errds = compute_relative_error(invds)
     (invds, errds)
@@ -126,7 +126,7 @@ corresponding value of the invariant.
 Returns a tuple of two ScalarDataSeries holding the time series of the invariant and the relativ error, respectively.
 """
 function compute_invariant_error(
-        t::TimeSeries, q::DataSeries{T}, p::DataSeries{T},
+        t::Union{TimeSeries{T}, ScalarDataSeries{T}}, q::DataSeries{T}, p::DataSeries{T},
         parameters::OptionalParameters, invariant::Base.Callable) where {T}
     invds = compute_invariant(t, q, p, parameters, invariant)
     errds = compute_relative_error(invds)
@@ -146,7 +146,8 @@ that holds the maxima.
 This is useful to detect drifts in invariants that are not preserved exactly but whose error
 is oscillating such as the energy error of Hamiltonian systems with symplectic integrators.
 """
-function compute_error_drift(t::TimeSeries, invariant_error::ScalarDataSeries{T},
+function compute_error_drift(
+        t::Union{TimeSeries{T}, ScalarDataSeries{T}}, invariant_error::ScalarDataSeries{T},
         interval_length = 100) where {T}
     @assert ntime(t) == ntime(invariant_error)
     @assert mod(ntime(t), interval_length) == 0
