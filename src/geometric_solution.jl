@@ -41,27 +41,32 @@ mutable struct GeometricSolution{
     nstore::Int
     offset::Int
 
-    function GeometricSolution(t::TimeSeries, problem::GeometricProblem, step::Int = 1)
+    function GeometricSolution(
+            timeser::TimeSeries, problem::GeometricProblem, step::Int = 1)
         @assert step ≥ 1
-        nstore = div(ntime(t), step)
+        nstore = div(ntime(timeser), step)
         ics = initialstate(problem)
+
+        t = DataSeries([timeser[n * step] for n in 0:nstore])
 
         states = [zero(ics) for _ in 0:nstore]
         statser = OffsetVector(states, 0:nstore)
 
         for n in eachindex(statser)
-            statser[n].t = t[n * step]
+            statser[n].t = t[n]
         end
 
-        dats = Tuple(DataSeries([parent(states[i][k]) for i in eachindex(states)])
-        for k in keys(ics))
-        dataser = NamedTuple{keys(ics)}(dats)
+        dats = Tuple(
+            DataSeries([parent(states[i][k]) for i in eachindex(states)]
+            ) for k in keys(ics))
+
+        dataser = merge((; t), NamedTuple{keys(ics)}(dats))
 
         period = _periodicity(dataser, periodicity(problem))
 
         sol = new{datatype(problem), timetype(problem),
-            typeof(t), typeof(dataser), typeof(statser), typeof(problem), typeof(period)}(
-            t, dataser, statser, problem, period, step, nstore, 0)
+            typeof(timeser), typeof(dataser), typeof(statser), typeof(problem), typeof(period)}(
+            timeser, dataser, statser, problem, period, step, nstore, 0)
 
         sol[0] = ics
         return sol
@@ -128,17 +133,10 @@ function Base.setindex!(sol::GeometricSolution, s::NamedTuple, n::Int)
 end
 
 function Base.setindex!(sol::GeometricSolution, st::State, n::Int)
-    @assert keys(sol) == keys(st)
     @assert n ≤ nstore(sol)
-
-    # dst = (sol[k][div(n, step(sol))] for k in keys(sol))
-    # src = (s[k] for k in keys(sol))
+    @assert keys(sol[n]) == keys(st)
 
     map((d, s) -> copy!(d, s), variables(sol, n), variables(st))
-
-    # for k in Val.(keys(sol))
-    #     sol[k][div(n, step(sol))] = s[k]
-    # end
 
     return st
 end

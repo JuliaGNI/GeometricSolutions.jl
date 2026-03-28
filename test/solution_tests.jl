@@ -15,16 +15,18 @@ const nstep = 10
 
     @test sol1.timeser == sol2.timeser
     @test sol1.dataser != sol2.dataser
+
+    @test sol1.t == sol1[:t]
     @test sol1.q == sol1[:q]
 
     @test step(sol1) == sol1.step == 1
     @test ntime(sol1) == ntime(sol1.timeser)
-    @test nstore(sol1) == sol1.nstore == ntime(sol1.timeser)
+    @test nstore(sol1) == sol1.nstore == ntime(sol1.timeser) == length(sol1.t) - 1
     @test timesteps(sol1) == collect(initialtime(prob):timestep(prob):finaltime(prob))
 
     @test step(sol2) == sol2.step == 10
     @test ntime(sol2) == ntime(sol2.timeser)
-    @test nstore(sol2) == sol2.nstore == div(ntime(sol2), nstep)
+    @test nstore(sol2) == sol2.nstore == div(ntime(sol2), nstep) == length(sol2.t) - 1
     @test timesteps(sol2) == collect(initialtime(prob):timestep(prob):finaltime(prob))
 
     @test sol1[0].t == initialstate(prob).t
@@ -55,10 +57,7 @@ const nstep = 10
 
     @test relative_maximum_error(sol, sol).q == 0
 
-    # println(arrays(sol).q)
-
-    # @test arrays(sol).q == hcat((vec(sol.q[n]) for n in eachtimestep(sol))...)
-    @test arrays(sol).q == hcat((vec(q) for q in sol.q)...)
+    @test arrays(sol).q == hcat(map(q -> vec(q), sol.q)...)
 end
 
 @testset "$(rpad("Ensemble Solution",80))" begin
