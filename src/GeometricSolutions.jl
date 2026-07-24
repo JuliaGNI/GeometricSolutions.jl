@@ -2,6 +2,7 @@ module GeometricSolutions
 
 using GeometricBase
 using GeometricEquations
+using LinearAlgebra: norm
 using Test
 
 using Base: TwicePrecision

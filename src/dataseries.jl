@@ -79,7 +79,46 @@ function Base.Array(ds::DataSeries)
     return z
 end
 
+# Relative maximum error of a single point. If the point-wise absolute error
+# vanishes (e.g. an all-zero reference point that is matched exactly) the relative
+# error is zero, avoiding the 0/0 = NaN that dividing by a zero norm would produce.
+function _relative_maximum_error(sol, ref)
+    err = maximum_error(sol, ref)
+    iszero(err) ? err : err / maximum(abs.(ref))
+end
+
+"""
+Computes the maximum over time of the relative maximum error between two DataSeries.
+
+Arguments: `(ds::DataSeries, ref::DataSeries)`
+
+For each time step the relative error `maximum_error(ds[i], ref[i]) / maximum(abs.(ref[i]))`
+is evaluated, i.e. each point is normalized by its own maximum absolute value. Returns the
+maximum of these per-step errors. An all-zero reference point matched exactly has a vanishing
+point-wise error and therefore contributes `0` rather than `0/0 = NaN`.
+"""
 function relative_maximum_error(ds::DataSeries, ref::DataSeries)
     @assert axes(ds.d) == axes(ref.d)
-    maximum(maximum_error.(ds.d, ref.d) ./ [maximum(abs.(d)) for d in ref.d])
+    maximum(_relative_maximum_error.(ds.d, ref.d))
+end
+
+# Relative p-norm error of a single point. As above, a vanishing absolute norm
+# error (e.g. an all-zero reference point matched exactly) yields zero instead of
+# the 0/0 = NaN that dividing by a zero norm would produce.
+function _relative_norm_error(sol, ref, p = 2)
+    err = norm(sol .- ref, p)
+    iszero(err) ? err : err / norm(ref, p)
+end
+
+"""
+Computes the time trace of the relative `p`-norm error between two DataSeries.
+
+Arguments: `(ds::DataSeries, ref::DataSeries, p = 2)`
+
+For each time step the relative error `norm(ds[i] - ref[i], p) / norm(ref[i], p)`
+is evaluated. Returns a `ScalarDataSeries` holding this time series.
+"""
+function relative_norm_error(ds::DataSeries, ref::DataSeries, p = 2)
+    @assert axes(ds.d) == axes(ref.d)
+    DataSeries([_relative_norm_error(d, r, p) for (d, r) in zip(ds.d, ref.d)])
 end

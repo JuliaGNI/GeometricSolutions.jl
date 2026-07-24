@@ -1,15 +1,39 @@
 
+"""
+Computes the relative `p`-norm error between a solution and a reference.
+
+Arguments: `(sol, ref, p = 2)`
+
+Returns `norm(sol .- ref, p) / norm(ref, p)`, i.e. the `p`-norm of the difference
+normalized by the `p`-norm of the reference.
+"""
 function relative_norm_error(sol, ref, p = 2)
     norm(sol .- ref, p) / norm(ref, p)
 end
 
+"""
+Computes the maximum absolute error between a solution and a reference.
+
+Arguments: `(sol, ref)`
+
+Returns `maximum(abs.(sol .- ref))`, the largest absolute component-wise difference.
+"""
 function maximum_error(sol, ref)
     maximum(abs.(sol .- ref))
 end
 
+"""
+Computes the relative maximum error between a solution and a reference.
+
+Arguments: `(sol, ref)`
+
+Returns `maximum_error(sol, ref) / maximum(abs.(ref))`, i.e. the maximum absolute
+error normalized by the maximum absolute value of the reference.
+"""
 function relative_maximum_error(sol, ref)
     maximum_error(sol, ref) / maximum(abs.(ref))
 end
+
 
 """
 Computes the difference of two DataSeries.
