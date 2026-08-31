@@ -16,10 +16,10 @@ Computes the maximum absolute error between a solution and a reference.
 
 Arguments: `(sol, ref)`
 
-Returns `maximum(abs.(sol .- ref))`, the largest absolute component-wise difference.
+Returns `maximum(abs, sol .- ref)`, the largest absolute component-wise difference.
 """
 function maximum_error(sol, ref)
-    maximum(abs.(sol .- ref))
+    maximum(abs, sol .- ref)
 end
 
 """
@@ -27,11 +27,11 @@ Computes the relative maximum error between a solution and a reference.
 
 Arguments: `(sol, ref)`
 
-Returns `maximum_error(sol, ref) / maximum(abs.(ref))`, i.e. the maximum absolute
+Returns `maximum_error(sol, ref) / maximum(abs, ref)`, i.e. the maximum absolute
 error normalized by the maximum absolute value of the reference.
 """
 function relative_maximum_error(sol, ref)
-    maximum_error(sol, ref) / maximum(abs.(ref))
+    maximum_error(sol, ref) / maximum(abs, ref)
 end
 
 
@@ -183,7 +183,7 @@ function compute_error_drift(
     for i in 1:nint
         i1 = interval_length * (i - 1) + 1
         i2 = interval_length * i
-        Idrift[i] = maximum(abs.(invariant_error[i1:i2]))
+        Idrift[i] = maximum(abs, invariant_error[i1:i2])
         push!(Tdrift, (t[i1] + t[i2]) / 2)
     end
 

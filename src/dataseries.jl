@@ -84,7 +84,7 @@ end
 # error is zero, avoiding the 0/0 = NaN that dividing by a zero norm would produce.
 function _relative_maximum_error(sol, ref)
     err = maximum_error(sol, ref)
-    iszero(err) ? err : err / maximum(abs.(ref))
+    iszero(err) ? err : err / maximum(abs, ref)
 end
 
 """
