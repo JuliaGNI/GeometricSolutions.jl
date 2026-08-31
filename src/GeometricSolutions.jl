@@ -5,7 +5,6 @@ using GeometricEquations
 using LinearAlgebra: norm
 using Test
 
-using Base: TwicePrecision
 using OffsetArrays: OffsetArray, OffsetVector
 
 import GeometricBase: AbstractSolution
