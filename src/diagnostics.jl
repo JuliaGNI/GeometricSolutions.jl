@@ -34,7 +34,6 @@ function relative_maximum_error(sol, ref)
     maximum_error(sol, ref) / maximum(abs, ref)
 end
 
-
 """
 Computes the difference of two DataSeries.
 

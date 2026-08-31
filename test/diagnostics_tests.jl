@@ -92,7 +92,6 @@ end
 
 @test parent(ϑe) == OffsetArray([zeros(dt, nd) for _ in 1:(nt + 1)], 0:nt)
 
-
 # Norm and maximum errors
 
 # relative_norm_error operates via `norm`, which recurses into arrays, so it
@@ -130,7 +129,6 @@ znsol2 = OffsetArray([dt[0.0, 0.0], dt[2.0, 2.0], dt[4.0, 4.0]], 0:2)
 
 @test relative_norm_error(znsol2, znref2) ≈ sqrt(2) / sqrt(42)
 
-
 # maximum_error and relative_maximum_error operate via `abs.(sol .- ref)`, so the
 # generic methods take plain numeric arrays (or a ScalarDataSeries); each element
 # is treated as a scalar component.
@@ -166,7 +164,6 @@ ssol = DataSeries(OffsetArray(dt[0.0, 1.0, 0.0, 3.0], 0:3))
 @test relative_maximum_error(ssol, sref) == 1.0 / 2.0
 @test !isnan(relative_maximum_error(ssol, sref))
 
-
 # relative_maximum_error for a DataSeries of vector-valued points dispatches to the
 # dedicated DataSeries method (src/dataseries.jl), which normalizes each point by
 # its own maximum and takes the maximum of the per-point relative errors.
@@ -182,7 +179,6 @@ vzs = OffsetArray([dt[0.0, 0.0], dt[1.5, 2.0], dt[0.0, 0.0], dt[3.0, 4.0]], 0:3)
 
 @test relative_maximum_error(DataSeries(vzs), DataSeries(vzr)) == 0.5 / 2.0
 @test !isnan(relative_maximum_error(DataSeries(vzs), DataSeries(vzr)))
-
 
 # relative_norm_error for two DataSeries returns a ScalarDataSeries holding the
 # time trace of the per-step relative p-norm error.

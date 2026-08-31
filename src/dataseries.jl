@@ -36,9 +36,12 @@ const ScalarDataSeries{DT} = DataSeries{DT, DT}
 @inline Base.getindex(ds::DataSeries, args...) = getindex(parent(ds), args...)
 @inline Base.setindex!(ds::DataSeries, args...) = setindex!(parent(ds), args...)
 
-@inline Base.getindex(ds::DataSeries, ind::Union{Int, IndexLinear, AbstractRange}, i, args...) = getindex(
+@inline Base.getindex(
+    ds::DataSeries, ind::Union{
+        Int, IndexLinear, AbstractRange}, i, args...) = getindex(
     parent(ds)[ind], i, args...)
-@inline Base.setindex!(ds::DataSeries, x::AbstractArray, ind::Union{Int, IndexLinear, AbstractRange}) = copy!(
+@inline Base.setindex!(ds::DataSeries, x::AbstractArray, ind::Union{
+    Int, IndexLinear, AbstractRange}) = copy!(
     parent(ds)[ind], x)
 
 @inline function Base.getindex(ds::DataSeries, ::Colon, j::Union{Int, CartesianIndex})
