@@ -12,3 +12,6 @@ end
 @safetestset "Diagnostics                                                                     " begin
     include("diagnostics_tests.jl")
 end
+@safetestset "HDF5                                                                            " begin
+    include("hdf5_tests.jl")
+end
