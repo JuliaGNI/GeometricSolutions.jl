@@ -41,6 +41,10 @@ and `timespan` are attributes of the group. The equation is not stored:
 [`h5load`](@ref GeometricBase.h5load) takes it from the problem it is given.
 """
 function h5save(h5::H5DataStore, sol::EnsembleSolution; path::AbstractString = "/")
+    # Stacked before the first write, so that a parameter HDF5 cannot store leaves no partial group.
+    ps = parameters(sol.problem)
+    sp = eltype(ps) <: NullParameters ? nothing : _stack_parameters(ps)
+
     g = _group(h5, path)
     s₀ = sol[begin]
     ns = nstore(s₀)
@@ -57,10 +61,9 @@ function h5save(h5::H5DataStore, sol::EnsembleSolution; path::AbstractString = "
         g[string(k)] = _stack(sol, k)
     end
 
-    ps = parameters(sol.problem)
-    if !(eltype(ps) <: NullParameters)
+    if !isnothing(sp)
         gp = create_group(g, "parameters")
-        for (k, v) in pairs(_stack_parameters(ps))
+        for (k, v) in pairs(sp)
             gp[string(k)] = v
         end
     end
@@ -106,7 +109,10 @@ function h5load(::Type{EnsembleSolution}, h5::H5DataStore, problem::EnsembleProb
         haskey(g, "parameters") ||
             throw(ArgumentError("the file has no parameters, the problem has some"))
         stored = g["parameters"]
-        for (k, v) in pairs(_stack_parameters(ps))
+        expected = _stack_parameters(ps)
+        names = sort([string(k) for k in keys(expected)])
+        _check("parameter names", sort(keys(stored)), names)
+        for (k, v) in pairs(expected)
             _check("parameters $k", read(stored[string(k)]), v)
         end
     end
@@ -117,7 +123,7 @@ function h5load(::Type{EnsembleSolution}, h5::H5DataStore, problem::EnsembleProb
         _check("size of $k", size(A), (size(x₀)..., ns + 1, nsamples(sol)))
         for (j, s) in enumerate(sol.s), n in 0:ns
 
-            s[k][n] = x₀ isa Number ? A[n + 1, j] : A[axes(x₀)..., n + 1, j]
+            s[k][n] = @view A[axes(x₀)..., n + 1, j]
         end
     end
 

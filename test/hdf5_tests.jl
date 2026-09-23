@@ -61,6 +61,13 @@ end
         parameters = [(k = 0.5,), (k = 1.5,), (k = 2.0,)])
     @test_throws ArgumentError h5open(io -> h5load(EnsembleSolution, io, other), file, "r")
 
+    extra = Tests.ExponentialGrowth.odeensemble(;
+        parameters = [(k = 0.5, m = 1.0), (k = 1.0, m = 1.0), (k = 2.0, m = 1.0)])
+    @test_throws ArgumentError h5open(io -> h5load(EnsembleSolution, io, extra), file, "r")
+    extrafile, _ = roundtrip(filled(extra, nstep), extra)
+    @test_throws ArgumentError h5open(
+        io -> h5load(EnsembleSolution, io, problem), extrafile, "r")
+
     coarser = Tests.ExponentialGrowth.odeensemble(; parameters = params, Δt = 0.2)
     @test_throws ArgumentError h5open(io -> h5load(EnsembleSolution, io, coarser), file, "r")
 
@@ -91,6 +98,20 @@ end
 
         @test axes(sol2[j][k]) == (0:ns,)
         @test sol2[j][k] == sol[j][k]
+    end
+end
+
+@testset "$(rpad("EnsembleSolution with a parameter HDF5 cannot store",80))" begin
+    params = [(k = "slow",), (k = "fast",)]
+    problem = ODEEnsemble(
+        (v, t, x, params) -> (v .= x; nothing), (0.0, 1.0), 0.1,
+        Tests.ExponentialGrowth.ics[1:2]; parameters = params)
+    sol = filled(problem, 1)
+
+    file = tempname() * ".h5"
+    h5open(file, "w") do io
+        @test_throws ArgumentError h5save(io, sol; path = "ensemble")
+        @test !haskey(io, "ensemble")
     end
 end
 
