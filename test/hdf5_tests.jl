@@ -48,7 +48,6 @@ end
     end
 
     @test sol2 isa EnsembleSolution
-    @test parameters(sol2.problem) == params
     for j in 1:3, k in keys(sol)
 
         @test axes(sol2[j][k]) == (0:ns,)
@@ -70,6 +69,29 @@ end
 
     coarser = Tests.ExponentialGrowth.odeensemble(; parameters = params, Δt = 0.2)
     @test_throws ArgumentError h5open(io -> h5load(EnsembleSolution, io, coarser), file, "r")
+
+    fewer = Tests.ExponentialGrowth.odeensemble(
+        Tests.ExponentialGrowth.ics[1:2]; parameters = params[1:2])
+    @test_throws ArgumentError h5open(io -> h5load(EnsembleSolution, io, fewer), file, "r")
+
+    shorter = Tests.ExponentialGrowth.odeensemble(; parameters = params, tend = 5.0)
+    @test_throws ArgumentError h5open(io -> h5load(EnsembleSolution, io, shorter), file, "r")
+
+    # rand gives ics in [0, 1), so these initial conditions differ from every member's.
+    moved = Tests.ExponentialGrowth.odeensemble(
+        [(q = StateVariable([1.0 + j]),) for j in 1:3]; parameters = params)
+    @test_throws ArgumentError h5open(io -> h5load(EnsembleSolution, io, moved), file, "r")
+
+    pode = PODEEnsemble(
+        (v, t, q, p, params) -> (v .= p; nothing),
+        (f, t, q, p, params) -> (f .= q; nothing),
+        (0.0, 10.0), 0.1,
+        [(q = ic.q, p = StateVariable([0.0])) for ic in Tests.ExponentialGrowth.ics];
+        parameters = params)
+    @test_throws ArgumentError h5open(io -> h5load(EnsembleSolution, io, pode), file, "r")
+    podefile, _ = roundtrip(filled(pode, nstep), pode)
+    @test_throws ArgumentError h5open(
+        io -> h5load(EnsembleSolution, io, problem), podefile, "r")
 
     nullparams = ODEEnsemble(
         (v, t, x, params) -> (v .= x; nothing), (0.0, 10.0), 0.1,
@@ -102,16 +124,18 @@ end
 end
 
 @testset "$(rpad("EnsembleSolution with a parameter HDF5 cannot store",80))" begin
-    params = [(k = "slow",), (k = "fast",)]
-    problem = ODEEnsemble(
-        (v, t, x, params) -> (v .= x; nothing), (0.0, 1.0), 0.1,
-        Tests.ExponentialGrowth.ics[1:2]; parameters = params)
-    sol = filled(problem, 1)
+    # HDF5 writes a Rational as a compound type and reads it back as a NamedTuple.
+    for params in ([(k = "slow",), (k = "fast",)], [(k = 1 // 2,), (k = 1 // 3,)])
+        problem = ODEEnsemble(
+            (v, t, x, params) -> (v .= x; nothing), (0.0, 1.0), 0.1,
+            Tests.ExponentialGrowth.ics[1:2]; parameters = params)
+        sol = filled(problem, 1)
 
-    file = tempname() * ".h5"
-    h5open(file, "w") do io
-        @test_throws ArgumentError h5save(io, sol; path = "ensemble")
-        @test !haskey(io, "ensemble")
+        file = tempname() * ".h5"
+        h5open(file, "w") do io
+            @test_throws ArgumentError h5save(io, sol; path = "ensemble")
+            @test !haskey(io, "ensemble")
+        end
     end
 end
 
@@ -126,5 +150,13 @@ end
     @test !h5open(io -> haskey(io, "parameters"), file, "r")
     for j in 1:3
         @test sol2[j].q == sol[j].q
+    end
+
+    # The file-path forms come from GeometricBase and forward to the methods of this extension.
+    fpath = tempname() * ".h5"
+    h5save(fpath, sol; path = "ensemble")
+    sol3 = h5load(EnsembleSolution, fpath, problem; path = "ensemble")
+    for j in 1:3
+        @test sol3[j].q == sol[j].q
     end
 end

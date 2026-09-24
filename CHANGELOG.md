@@ -19,9 +19,6 @@ first entry is written.
   2026-08-31 while seeding this file; the cause has not been established and nothing was
   changed. Resolve before the next release, since the close-out commit sets `version` by hand
   and would otherwise re-use a burnt number.
-- `GeometricBase = "0.14.12"` names a version that is not registered yet. Until GeometricBase
-  releases it, `Pkg.test()` and CI do not resolve; the suite runs only in an environment that
-  develops a GeometricBase tree with `h5save` and `h5load`.
 - A single `GeometricSolution` has no HDF5 methods. Only `EnsembleSolution` has them.
 
 ## [Unreleased] — targeting 0.7.0
@@ -36,7 +33,8 @@ first entry is written.
   HDF5 cannot hold the equation, so the read takes the `EnsembleProblem` and rebuilds the
   solution from it, which gives every `DataSeries` its 0-based axis. The read throws an
   `ArgumentError` when the file does not belong to that problem: a different member count, time
-  step, time span, stored-step count, or any member's parameters.
+  step, time span, stored-step count, set of state variables, initial condition, or any member's
+  parameters.
 
   The two functions are GeometricBase's generics, and this package does not export them.
   `ReducedComplexityModeling` exports its own `h5save` and `h5load`, so an export here would make
