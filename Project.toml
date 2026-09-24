@@ -10,18 +10,26 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
+[weakdeps]
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
+
+[extensions]
+GeometricSolutionsHDF5Ext = "HDF5"
+
 [compat]
-GeometricBase = "0.14.1"
+GeometricBase = "0.14.12"
 GeometricEquations = "0.21"
+HDF5 = "0.17"
 LinearAlgebra = "1"
 OffsetArrays = "1"
 julia = "1.10"
 
 [extras]
 GeometricEquations = "c85262ba-a08a-430a-b926-d29770767bf2"
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
 OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
 SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["GeometricEquations", "OffsetArrays", "SafeTestsets", "Test"]
+test = ["GeometricEquations", "HDF5", "OffsetArrays", "SafeTestsets", "Test"]

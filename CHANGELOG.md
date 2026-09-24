@@ -19,10 +19,27 @@ first entry is written.
   2026-08-31 while seeding this file; the cause has not been established and nothing was
   changed. Resolve before the next release, since the close-out commit sets `version` by hand
   and would otherwise re-use a burnt number.
+- A single `GeometricSolution` has no HDF5 methods. Only `EnsembleSolution` has them.
 
 ## [Unreleased] — targeting 0.7.0
 
 ### New Features
+
+- An `HDF5` package extension, `GeometricSolutionsHDF5Ext`, stores an `EnsembleSolution`.
+  `GeometricBase.h5save(h5, sol; path)` writes it, and
+  `GeometricBase.h5load(EnsembleSolution, h5, problem; path)` reads it back. A state variable `q`
+  is one dataset of size `(size(q)..., nstore + 1, nsamples)`, where column `n + 1` holds time
+  index `n`. Each parameter is a dataset under `parameters/`, of size `(size(p)..., nsamples)`.
+  HDF5 cannot hold the equation, so the read takes the `EnsembleProblem` and rebuilds the
+  solution from it, which gives every `DataSeries` its 0-based axis. The read throws an
+  `ArgumentError` when the file does not belong to that problem: a different member count, time
+  step, time span, stored-step count, set of state variables, initial condition, or any member's
+  parameters.
+
+  The two functions are GeometricBase's generics, and this package does not export them.
+  `ReducedComplexityModeling` exports its own `h5save` and `h5load`, so an export here would make
+  both names an `UndefVarError` for a caller that loads the two packages. The package now needs
+  GeometricBase 0.14.12, the first version with the generics.
 
 ### Bug Fixes
 
