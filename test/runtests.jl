@@ -1,17 +1,12 @@
 using SafeTestsets
 
-@safetestset "Data Series                                                                     " begin
-    include("dataseries_tests.jl")
-end
-@safetestset "Time Series                                                                     " begin
-    include("timeseries_tests.jl")
-end
-@safetestset "Solution                                                                        " begin
-    include("solution_tests.jl")
-end
-@safetestset "Diagnostics                                                                     " begin
-    include("diagnostics_tests.jl")
-end
-@safetestset "HDF5                                                                            " begin
-    include("hdf5_tests.jl")
+const GROUPS = isempty(ARGS) ? ["core", "slow"] : ARGS
+
+if "core" in GROUPS
+    @safetestset "Aqua" include("quality/aqua.jl")
+    @safetestset "Data Series" include("dataseries.jl")
+    @safetestset "Time Series" include("timeseries.jl")
+    @safetestset "Solution" include("solutions.jl")
+    @safetestset "Diagnostics" include("diagnostics.jl")
+    @safetestset "HDF5" include("hdf5.jl")
 end

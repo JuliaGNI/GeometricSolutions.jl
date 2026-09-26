@@ -44,3 +44,15 @@ first entry is written.
 ### Bug Fixes
 
 ### Breaking Changes
+
+### Tests
+
+- The test suite follows the shared layout. The test dependencies are in `test/Project.toml`,
+  and `Project.toml` has no `[extras]` or `[targets]`. `runtests.jl` runs the files through
+  `@safetestset` in the `core` group. Each test file is named after the source file it tests:
+  `dataseries.jl`, `timeseries.jl`, `diagnostics.jl`, `solutions.jl` for `GeometricSolution` and
+  `EnsembleSolution`, and `hdf5.jl` for the HDF5 extension. The files that draw random numbers
+  set a fixed seed.
+- A new `test/quality/aqua.jl` runs Aqua. Its ambiguity check is marked broken with issue #33:
+  two ambiguities between `==` on `TimeSeries` and GeometricBase's `==` on `AbstractVariable`.
+  `Project.toml` gets the bound `Test = "1"`, which Aqua's compat check needs.
