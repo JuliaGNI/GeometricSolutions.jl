@@ -1,6 +1,9 @@
 using GeometricSolutions
 using OffsetArrays
+using Random
 using Test
+
+Random.seed!(1)
 
 dt = Float64
 nt = 10

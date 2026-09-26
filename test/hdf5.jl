@@ -2,7 +2,10 @@ using GeometricEquations
 using GeometricEquations.Tests
 using GeometricSolutions
 using HDF5
+using Random
 using Test
+
+Random.seed!(1)
 
 using GeometricBase: h5load, h5save
 

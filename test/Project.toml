@@ -1,20 +1,14 @@
-name = "GeometricSolutions"
-uuid = "7843afe4-64f4-4df4-9231-049495c56661"
-version = "0.6.5"
-authors = ["Michael Kraus"]
-
 [deps]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 GeometricBase = "9a0b12b7-583b-4f04-aa1f-d8551b6addc9"
 GeometricEquations = "c85262ba-a08a-430a-b926-d29770767bf2"
+GeometricSolutions = "7843afe4-64f4-4df4-9231-049495c56661"
+HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 OffsetArrays = "6fe1bfb0-de20-5000-8ca7-80f57d26f881"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[weakdeps]
-HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
-
-[extensions]
-GeometricSolutionsHDF5Ext = "HDF5"
 
 [compat]
 GeometricBase = "0.14.12"
@@ -23,4 +17,6 @@ HDF5 = "0.17"
 LinearAlgebra = "1"
 OffsetArrays = "1"
 Test = "1"
-julia = "1.10"
+
+[sources]
+GeometricSolutions = {path = ".."}
