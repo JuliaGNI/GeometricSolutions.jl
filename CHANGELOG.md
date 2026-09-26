@@ -13,14 +13,6 @@ reconstructed, because a changelog assembled after the fact loses exactly the re
 makes it worth keeping. The `[Unreleased]` target below is provisional — confirm it when the
 first entry is written.
 
-## Open Issues
-
-- `Project.toml` declares `version = "0.6.4"` while the newest tag is `v0.6.5`. Noticed
-  2026-08-31 while seeding this file; the cause has not been established and nothing was
-  changed. Resolve before the next release, since the close-out commit sets `version` by hand
-  and would otherwise re-use a burnt number.
-- A single `GeometricSolution` has no HDF5 methods. Only `EnsembleSolution` has them.
-
 ## [Unreleased] — targeting 0.7.0
 
 ### New Features
