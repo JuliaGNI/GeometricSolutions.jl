@@ -7,7 +7,7 @@
   2026-08-31 while seeding this file; the cause has not been established and nothing was
   changed. Resolve before the next release, since the close-out commit sets `version` by hand
   and would otherwise re-use a burnt number.
-- **kind:** defect
+- **kind:** not verified
 - **found:** 2026-08-31
 
 ### K2 · A single `GeometricSolution` has no HDF5 methods.
