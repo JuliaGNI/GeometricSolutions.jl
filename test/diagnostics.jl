@@ -2,7 +2,10 @@ using GeometricEquations
 using GeometricSolutions
 using LinearAlgebra
 using OffsetArrays
+using Random
 using Test
+
+Random.seed!(1)
 
 dt = Float64
 nt = 10
