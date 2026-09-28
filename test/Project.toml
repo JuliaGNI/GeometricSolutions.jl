@@ -11,13 +11,7 @@ SafeTestsets = "1bc83da4-3b8d-516f-aca4-4fe02f6d838f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-GeometricBase = "0.14.12"
-GeometricEquations = "0.21"
-HDF5 = "0.17"
-LinearAlgebra = "1"
-OffsetArrays = "1"
 SafeTestsets = "0.1.0"
-Test = "1"
 
 [sources]
 GeometricSolutions = {path = ".."}
