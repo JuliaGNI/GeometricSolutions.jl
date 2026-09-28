@@ -48,3 +48,5 @@ first entry is written.
 - A new `test/quality/aqua.jl` runs Aqua. Its ambiguity check is marked broken with issue #33:
   two ambiguities between `==` on `TimeSeries` and GeometricBase's `==` on `AbstractVariable`.
   `Project.toml` gets the bound `Test = "1"`, which Aqua's compat check needs.
+- The link to issue #33 in `test/quality/aqua.jl` moves onto the line of the `broken = true`
+  mark, so the shared `test-layout.jl --check` finds the issue for that mark.
