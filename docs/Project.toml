@@ -5,3 +5,6 @@ GeometricSolutions = "7843afe4-64f4-4df4-9231-049495c56661"
 
 [sources]
 GeometricSolutions = {path = ".."}
+
+[compat]
+DocumenterInterLinks = "1.1.0"
