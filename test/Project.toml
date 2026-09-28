@@ -16,6 +16,7 @@ GeometricEquations = "0.21"
 HDF5 = "0.17"
 LinearAlgebra = "1"
 OffsetArrays = "1"
+SafeTestsets = "0.1.0"
 Test = "1"
 
 [sources]
