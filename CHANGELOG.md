@@ -39,6 +39,7 @@ first entry is written.
 
 ### Tests
 
+- A new `test/quality/explicit_imports.jl` runs ExplicitImports in the `core` group.
 - The test suite follows the shared layout. The test dependencies are in `test/Project.toml`,
   and `Project.toml` has no `[extras]` or `[targets]`. `runtests.jl` runs the files through
   `@safetestset` in the `core` group. Each test file is named after the source file it tests:
