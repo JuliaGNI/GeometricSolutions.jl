@@ -56,3 +56,4 @@ first entry is written.
   `Project.toml`, so the root's bounds apply to them in the test environment too, and a second
   bound can only duplicate or narrow the root's. The shared `test-layout.jl --check` reports such
   an entry.
+- An unused binding goes out of `test/dataseries.jl`.

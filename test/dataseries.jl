@@ -99,8 +99,6 @@ end
     @test eachindex(IndexLinear(), ds) == 0:nt
     @test eachindex(IndexCartesian(), ds) == CartesianIndices((0:nt,))
 
-    ds2 = DataSeries(rand(dt, nd), nt)
-
     for i in 0:nt
         ds[i] = [i, i^2]
     end
