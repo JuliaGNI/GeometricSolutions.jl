@@ -51,3 +51,8 @@ first entry is written.
   `Project.toml` gets the bound `Test = "1"`, which Aqua's compat check needs.
 - The link to issue #33 is on the same line as the `broken = true` mark in
   `test/quality/aqua.jl`, as the shared `test-layout.jl --check` requires for every broken mark.
+- `test/Project.toml` no longer has `[compat]` entries for `GeometricBase`, `GeometricEquations`,
+  `HDF5`, `LinearAlgebra`, `OffsetArrays` and `Test`. These are dependencies of the root
+  `Project.toml`, so the root's bounds apply to them in the test environment too, and a second
+  bound can only duplicate or narrow the root's. The shared `test-layout.jl --check` reports such
+  an entry.
