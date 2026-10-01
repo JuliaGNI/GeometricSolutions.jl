@@ -1,6 +1,6 @@
 name = "GeometricSolutions"
 uuid = "7843afe4-64f4-4df4-9231-049495c56661"
-version = "0.6.5"
+version = "0.6.6"
 authors = ["Michael Kraus"]
 
 [deps]
@@ -17,10 +17,10 @@ HDF5 = "f67ccb44-e63f-5c2f-98bd-6dc0ccc4ba2f"
 GeometricSolutionsHDF5Ext = "HDF5"
 
 [compat]
-GeometricBase = "0.14.12"
-GeometricEquations = "0.21"
+GeometricBase = "0.15.0"
+GeometricEquations = "0.21.5"
 HDF5 = "0.17"
 LinearAlgebra = "1"
 OffsetArrays = "1"
 Test = "1"
-julia = "1.10"
+julia = "1.11"
