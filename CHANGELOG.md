@@ -30,8 +30,8 @@ first entry is written.
 
   The two functions are GeometricBase's generics, and this package does not export them.
   `ReducedComplexityModeling` exports its own `h5save` and `h5load`, so an export here would make
-  both names an `UndefVarError` for a caller that loads the two packages. The package now needs
-  GeometricBase 0.14.12, the first version with the generics.
+  both names an `UndefVarError` for a caller that loads the two packages. GeometricBase 0.14.12
+  is the first version with the generics.
 
 ### Bug Fixes
 
