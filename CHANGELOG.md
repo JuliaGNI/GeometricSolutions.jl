@@ -37,11 +37,11 @@ first entry is written.
 
 ### Breaking Changes
 
-### Changed
+### Changes
 
 - The `[compat]` floors are raised to `GeometricBase = "0.15.0"`, `GeometricEquations = "0.21.5"`
   and `julia = "1.11"`, because GeometricBase 0.15 declares its stubs public and requires Julia
-  1.11. Julia 1.10 users keep 0.6.5. No source file changes.
+  1.11. Julia 1.10 users keep 0.6.5. The floor raise changes no source file.
 
 ### Tests
 
