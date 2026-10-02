@@ -13,7 +13,7 @@ reconstructed, because a changelog assembled after the fact loses exactly the re
 makes it worth keeping. The `[Unreleased]` target below is provisional — confirm it when the
 first entry is written.
 
-## [Unreleased] — targeting 0.7.0
+## [Unreleased] — targeting 0.6.6
 
 ### New Features
 
@@ -30,12 +30,18 @@ first entry is written.
 
   The two functions are GeometricBase's generics, and this package does not export them.
   `ReducedComplexityModeling` exports its own `h5save` and `h5load`, so an export here would make
-  both names an `UndefVarError` for a caller that loads the two packages. The package now needs
-  GeometricBase 0.14.12, the first version with the generics.
+  both names an `UndefVarError` for a caller that loads the two packages. GeometricBase 0.14.12
+  is the first version with the generics.
 
 ### Bug Fixes
 
 ### Breaking Changes
+
+### Changes
+
+- The `[compat]` floors are raised to `GeometricBase = "0.15.0"`, `GeometricEquations = "0.21.5"`
+  and `julia = "1.11"`, because GeometricBase 0.15 declares its stubs public and requires Julia
+  1.11. Julia 1.10 users keep 0.6.5. The floor raise changes no source file.
 
 ### Tests
 
