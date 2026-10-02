@@ -6,14 +6,12 @@ This package is pre-1.0, so *every* minor release is potentially breaking in the
 [SemVer](https://semver.org) for `0.x` versions. The sections below name what actually
 changed, so that a compat-only bump can be told apart from a rename or a change in results.
 
-This file was started on 2026-08-31 and deliberately holds no entries. 52 versions were
-released before it, the most recent tag `v0.6.5`, and none of them are written up here: the
-record of that history is `git log` and the tags. It is named as a gap rather than
-reconstructed, because a changelog assembled after the fact loses exactly the reasoning that
-makes it worth keeping. The `[Unreleased]` target below is provisional — confirm it when the
-first entry is written.
+This file was started on 2026-08-31. 52 versions were released before it, the most recent tag
+`v0.6.5`, and none of them are written up here: the record of that history is `git log` and the
+tags. It is named as a gap rather than reconstructed, because a changelog assembled after the
+fact loses exactly the reasoning that makes it worth keeping.
 
-## [Unreleased] — targeting 0.6.6
+## [0.6.6]
 
 ### New Features
 
@@ -32,10 +30,6 @@ first entry is written.
   `ReducedComplexityModeling` exports its own `h5save` and `h5load`, so an export here would make
   both names an `UndefVarError` for a caller that loads the two packages. GeometricBase 0.14.12
   is the first version with the generics.
-
-### Bug Fixes
-
-### Breaking Changes
 
 ### Changes
 
