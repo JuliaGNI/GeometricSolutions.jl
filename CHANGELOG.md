@@ -11,6 +11,13 @@ This file was started on 2026-08-31. 52 versions were released before it, the mo
 tags. It is named as a gap rather than reconstructed, because a changelog assembled after the
 fact loses exactly the reasoning that makes it worth keeping.
 
+## [Unreleased]
+
+### Changes
+
+- CI uploads coverage from the `Julia 1 - ubuntu-latest` job instead of `Julia min`, and a test
+  job saves the Julia cache only when it succeeds.
+
 ## [0.6.6]
 
 ### New Features
