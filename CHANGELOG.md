@@ -17,6 +17,12 @@ fact loses exactly the reasoning that makes it worth keeping.
 
 - CI uploads coverage from the `Julia 1 - ubuntu-latest` job instead of `Julia min`, and a test
   job saves the Julia cache only when it succeeds.
+- `test/solutions.jl` moved to `test/integration/solutions.jl`, and `test/hdf5.jl` to
+  `test/integration/hdf5.jl`. The test convention keeps a test file at the top level of `test/`
+  only where it mirrors `src/<name>.jl`, and there is no `src/solutions.jl` or `src/hdf5.jl`.
+  `solutions.jl` tests `src/geometric_solution.jl` and `src/ensemble_solution.jl`, whose deepest
+  common directory is `src/` itself. `hdf5.jl` tests the package extension
+  `ext/GeometricSolutionsHDF5Ext.jl`, which has no mirror under `src/`.
 
 ## [0.6.6]
 
