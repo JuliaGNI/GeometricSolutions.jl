@@ -41,24 +41,28 @@ include("diagnostics.jl")
 export compute_invariant, compute_invariant_error, compute_momentum_error, compute_one_form
 export compute_difference, compute_error_drift, compute_relative_error
 
-const SolutionODE{dType, tType, tsType, dsType, stType,
-    probType <: Union{ODEProblem, SODEProblem, SubstepProblem}, perType} = GeometricSolution{
-    dType, tType, tsType, dsType, stType, probType, perType}
-const SolutionDAE{dType, tType, tsType, dsType, stType,
-    probType <: DAEProblem, perType} = GeometricSolution{
-    dType, tType, tsType, dsType, stType, probType, perType}
-const SolutionSDE{dType, tType, tsType, dsType, stType,
-    probType <: SDEProblem, perType} = GeometricSolution{
-    dType, tType, tsType, dsType, stType, probType, perType}
-const SolutionPODE{dType, tType, tsType, dsType, stType,
-    probType <: Union{PODEProblem, HODEProblem, IODEProblem, LODEProblem}, perType} = GeometricSolution{
-    dType, tType, tsType, dsType, stType, probType, perType}
-const SolutionPDAE{dType, tType, tsType, dsType, stType,
-    probType <: Union{PDAEProblem, HDAEProblem, IDAEProblem, LDAEProblem}, perType} = GeometricSolution{
-    dType, tType, tsType, dsType, stType, probType, perType}
-const SolutionPSDE{dType, tType, tsType, dsType, stType,
-    probType <: PSDEProblem, perType} = GeometricSolution{
-    dType, tType, tsType, dsType, stType, probType, perType}
+# Each alias repeats the bounds of `GeometricSolution`, so that it is a subtype of
+# `GeometricSolution` and a method on the alias is more specific than one on `GeometricSolution`.
+const SolutionODE{dType, tType, tsType <: TimeSeries{tType}, dsType <: NamedTuple,
+    stType <: OffsetVector, probType <: Union{ODEProblem, SODEProblem, SubstepProblem},
+    perType} = GeometricSolution{dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionDAE{dType, tType, tsType <: TimeSeries{tType}, dsType <: NamedTuple,
+    stType <: OffsetVector, probType <: DAEProblem,
+    perType} = GeometricSolution{dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionSDE{dType, tType, tsType <: TimeSeries{tType}, dsType <: NamedTuple,
+    stType <: OffsetVector, probType <: SDEProblem,
+    perType} = GeometricSolution{dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionPODE{dType, tType, tsType <: TimeSeries{tType}, dsType <: NamedTuple,
+    stType <: OffsetVector,
+    probType <: Union{PODEProblem, HODEProblem, IODEProblem, LODEProblem},
+    perType} = GeometricSolution{dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionPDAE{dType, tType, tsType <: TimeSeries{tType}, dsType <: NamedTuple,
+    stType <: OffsetVector,
+    probType <: Union{PDAEProblem, HDAEProblem, IDAEProblem, LDAEProblem},
+    perType} = GeometricSolution{dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionPSDE{dType, tType, tsType <: TimeSeries{tType}, dsType <: NamedTuple,
+    stType <: OffsetVector, probType <: PSDEProblem,
+    perType} = GeometricSolution{dType, tType, tsType, dsType, stType, probType, perType}
 
 export SolutionODE, SolutionDAE, SolutionSDE
 export SolutionPODE, SolutionPDAE, SolutionPSDE

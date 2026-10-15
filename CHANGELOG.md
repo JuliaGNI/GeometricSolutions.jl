@@ -20,7 +20,9 @@ fact loses exactly the reasoning that makes it worth keeping.
   `GeometricSolution`, which has seven, so the problem-type bound fell on the `NamedTuple` slot of
   the data series and no solution matched any alias: `GeometricSolution(prob) isa SolutionPODE`
   was `false` for a `PODEProblem` or an `LODEProblem`. Each alias now has the seven parameters
-  of `GeometricSolution`, with the bound on the problem type. A caller that branches on these
+  of `GeometricSolution`, with its bounds and the bound on the problem type, so each alias is a
+  subtype of `GeometricSolution` and a method on an alias is more specific than one on
+  `GeometricSolution`. A caller that branches on these
   aliases, such as `plot_energy_error` in GeometricProblems, now takes the partitioned branch
   for a partitioned solution
   ([JuliaGNI/NonlinearIntegrators.jl#117](https://github.com/JuliaGNI/NonlinearIntegrators.jl/issues/117)).

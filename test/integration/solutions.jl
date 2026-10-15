@@ -72,6 +72,10 @@ end
     @test !(GeometricSolution(pode) isa SolutionODE)
     @test !(GeometricSolution(pode) isa
             Union{SolutionDAE, SolutionPDAE, SolutionSDE, SolutionPSDE})
+
+    # Each alias is a subtype, so a method on it is more specific than one on `GeometricSolution`.
+    @test all(A -> A <: GeometricSolution,
+        (SolutionODE, SolutionDAE, SolutionSDE, SolutionPODE, SolutionPDAE, SolutionPSDE))
 end
 
 @testset "$(rpad("Ensemble Solution",80))" begin
