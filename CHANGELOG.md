@@ -11,7 +11,7 @@ This file was started on 2026-08-31. 52 versions were released before it, the mo
 tags. It is named as a gap rather than reconstructed, because a changelog assembled after the
 fact loses exactly the reasoning that makes it worth keeping.
 
-## [Unreleased]
+## [0.6.7]
 
 ### Bug Fixes
 
