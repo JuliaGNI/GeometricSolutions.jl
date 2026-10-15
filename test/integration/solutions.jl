@@ -60,6 +60,20 @@ const nstep = 10
     @test arrays(sol).q == hcat(map(q -> vec(q), sol.q)...)
 end
 
+@testset "$(rpad("Solution type aliases",80))" begin
+    ode = Tests.ExponentialGrowth.odeproblem()
+    pode = PODEProblem((v, t, q, p, params) -> (v[1] = p[1]),
+        (f, t, q, p, params) -> (f[1] = -q[1]), (0.0, 1.0), 0.1, [1.0], [0.0])
+
+    # Each alias constrains the problem slot of `GeometricSolution`.
+    @test GeometricSolution(ode) isa SolutionODE
+    @test GeometricSolution(pode) isa SolutionPODE
+    @test !(GeometricSolution(ode) isa SolutionPODE)
+    @test !(GeometricSolution(pode) isa SolutionODE)
+    @test !(GeometricSolution(pode) isa
+            Union{SolutionDAE, SolutionPDAE, SolutionSDE, SolutionPSDE})
+end
+
 @testset "$(rpad("Ensemble Solution",80))" begin
     probs = Tests.ExponentialGrowth.odeensemble()
 

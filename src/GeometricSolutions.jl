@@ -41,21 +41,24 @@ include("diagnostics.jl")
 export compute_invariant, compute_invariant_error, compute_momentum_error, compute_one_form
 export compute_difference, compute_error_drift, compute_relative_error
 
-const SolutionODE{dType, tType, dsType, probType, perType} = GeometricSolution{
-    dType, tType, dsType, probType,
-    perType} where {probType <: Union{ODEProblem, SODEProblem, SubstepProblem}}
-const SolutionDAE{dType, tType, dsType, probType, perType} = GeometricSolution{
-    dType, tType, dsType, probType, perType} where {probType <: DAEProblem}
-const SolutionSDE{dType, tType, dsType, probType, perType} = GeometricSolution{
-    dType, tType, dsType, probType, perType} where {probType <: SDEProblem}
-const SolutionPODE{dType, tType, dsType, probType, perType} = GeometricSolution{
-    dType, tType, dsType, probType,
-    perType} where {probType <: Union{PODEProblem, HODEProblem, IODEProblem, LODEProblem}}
-const SolutionPDAE{dType, tType, dsType, probType, perType} = GeometricSolution{
-    dType, tType, dsType, probType,
-    perType} where {probType <: Union{PDAEProblem, HDAEProblem, IDAEProblem, LDAEProblem}}
-const SolutionPSDE{dType, tType, dsType, probType, perType} = GeometricSolution{
-    dType, tType, dsType, probType, perType} where {probType <: PSDEProblem}
+const SolutionODE{dType, tType, tsType, dsType, stType,
+    probType <: Union{ODEProblem, SODEProblem, SubstepProblem}, perType} = GeometricSolution{
+    dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionDAE{dType, tType, tsType, dsType, stType,
+    probType <: DAEProblem, perType} = GeometricSolution{
+    dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionSDE{dType, tType, tsType, dsType, stType,
+    probType <: SDEProblem, perType} = GeometricSolution{
+    dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionPODE{dType, tType, tsType, dsType, stType,
+    probType <: Union{PODEProblem, HODEProblem, IODEProblem, LODEProblem}, perType} = GeometricSolution{
+    dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionPDAE{dType, tType, tsType, dsType, stType,
+    probType <: Union{PDAEProblem, HDAEProblem, IDAEProblem, LDAEProblem}, perType} = GeometricSolution{
+    dType, tType, tsType, dsType, stType, probType, perType}
+const SolutionPSDE{dType, tType, tsType, dsType, stType,
+    probType <: PSDEProblem, perType} = GeometricSolution{
+    dType, tType, tsType, dsType, stType, probType, perType}
 
 export SolutionODE, SolutionDAE, SolutionSDE
 export SolutionPODE, SolutionPDAE, SolutionPSDE

@@ -13,6 +13,18 @@ fact loses exactly the reasoning that makes it worth keeping.
 
 ## [Unreleased]
 
+### Bug Fixes
+
+- **`SolutionODE`, `SolutionDAE`, `SolutionSDE`, `SolutionPODE`, `SolutionPDAE` and
+  `SolutionPSDE` match the solutions they name.** Each alias passed five type parameters to
+  `GeometricSolution`, which has seven, so the problem-type bound fell on the `NamedTuple` slot of
+  the data series and no solution matched any alias: `GeometricSolution(prob) isa SolutionPODE`
+  was `false` for a `PODEProblem` or an `LODEProblem`. Each alias now has the seven parameters
+  of `GeometricSolution`, with the bound on the problem type. A caller that branches on these
+  aliases, such as `plot_energy_error` in GeometricProblems, now takes the partitioned branch
+  for a partitioned solution
+  ([JuliaGNI/NonlinearIntegrators.jl#117](https://github.com/JuliaGNI/NonlinearIntegrators.jl/issues/117)).
+
 ### Changes
 
 - CI uploads coverage from the `Julia 1 - ubuntu-latest` job instead of `Julia min`, and a test
