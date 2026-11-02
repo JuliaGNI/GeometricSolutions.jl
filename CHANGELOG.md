@@ -11,6 +11,19 @@ This file was started on 2026-08-31. 52 versions were released before it, the mo
 tags. It is named as a gap rather than reconstructed, because a changelog assembled after the
 fact loses exactly the reasoning that makes it worth keeping.
 
+## [Unreleased]
+
+### Changes
+
+- **The `OffsetArrays` floor is 1.14** (`[compat] OffsetArrays = "1.14"`, from `"1"`).
+  `OffsetArrays` 1.13 and earlier redefine `Base.fill(::Any, ::Tuple{Vararg{Union{Integer,
+  AbstractUnitRange}}})`, and Julia 1.12 does not permit method overwriting during
+  precompilation, so `OffsetArrays` and with it this package do not precompile at those versions.
+- **The test environment declares `[compat] Aqua = "0.8.14"`.** Without an entry, a resolve at
+  the lower bounds takes Aqua 0.1.0, whose `test_all` has no `ambiguities` keyword. Aqua 0.8.14 is
+  the first release whose piracy check runs on Julia 1.12: earlier releases read the `mt` field of
+  `Core.TypeName`, which Julia 1.12 removes.
+
 ## [0.6.8]
 
 ### Changes
