@@ -23,6 +23,14 @@ fact loses exactly the reasoning that makes it worth keeping.
   the lower bounds takes Aqua 0.1.0, whose `test_all` has no `ambiguities` keyword. Aqua 0.8.14 is
   the first release whose piracy check runs on Julia 1.12: earlier releases read the `mt` field of
   `Core.TypeName`, which Julia 1.12 removes.
+- **The time series of an `EnsembleSolution` has a concrete type.** The field `t` was declared
+  `TimeSeries{tType}`, which leaves the other parameters of `TimeSeries` open, so every access
+  to `sol.t` was inferred as an abstract type. `EnsembleSolution` takes a fifth type parameter,
+  `tsType <: TimeSeries{tType}`, appended after `probType`, and `t::tsType`. A signature or an
+  `isa` test that names the first four parameters or fewer, such as
+  `EnsembleSolution{T, T1, Vector{ST}}`, matches as before. Only code that takes
+  `EnsembleSolution{dType, tType, sType, probType}` for a concrete type, for example as a field
+  type or in a `typeof` comparison, sees a change: that spelling is now a `UnionAll`.
 
 ## [0.6.8]
 
