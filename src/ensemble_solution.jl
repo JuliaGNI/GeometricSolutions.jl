@@ -17,6 +17,7 @@ and/or parameters. Each solution in the ensemble is stored as a [`GeometricSolut
 * `tType`: data type for time values (e.g., `Float64`)
 * `sType`: type of the solution vector
 * `probType`: type of the ensemble problem
+* `tsType`: type of the time series
 
 ### Constructor
 
@@ -65,8 +66,9 @@ solution_arrays = arrays(ensemble_solution)
 * [`arrays`](@ref): Convert solutions to arrays for analysis
 * [`relative_maximum_error`](@ref): Compare ensemble solutions
 """
-struct EnsembleSolution{dType, tType, sType, probType} <: AbstractSolution{dType, tType}
-    t::TimeSeries{tType}
+struct EnsembleSolution{dType, tType, sType, probType, tsType <: TimeSeries{tType}} <:
+       AbstractSolution{dType, tType}
+    t::tsType
     s::sType
 
     problem::probType
@@ -75,7 +77,8 @@ struct EnsembleSolution{dType, tType, sType, probType} <: AbstractSolution{dType
         t = TimeSeries(initialtime(problem), finaltime(problem), timestep(problem))
         s = [GeometricSolution(t, p, step) for p in problem]
 
-        new{datatype(problem), timetype(problem), typeof(s), typeof(problem)}(t, s, problem)
+        new{datatype(problem), timetype(problem), typeof(s), typeof(problem), typeof(t)}(
+            t, s, problem)
     end
 end
 
