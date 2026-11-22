@@ -27,8 +27,12 @@ fact loses exactly the reasoning that makes it worth keeping.
 
   The number of steps is now `round((tend - tbegin)/Δt)` when `tbegin + n·Δt` lies within 8 ulp
   (`8·eps·max(|tbegin|, |tend|)`) of `tend`, and `floor` otherwise, in the internal function
-  `ntimesteps`. A span that is a whole number of steps always holds all of them; a span that is
-  not still ends at the last step before `tend`, as before. The rule applies to floating-point
+  `ntimesteps`. The endpoints and the step are converted to `promote_type(T, Float64)` before the
+  quotient and the end-point residual are computed, so that `tend - tbegin` does not round in a
+  narrow time type (in `Float16`, the span 0.5 to 1025 in steps of 0.5 gave 2048 steps instead of
+  2049); the tolerance stays that of the time type `T`, and the grid elements keep `T`. A span
+  that is a whole number of steps always holds all of them; a span that is not still ends at the
+  last step before `tend`, as before. The rule applies to floating-point
   times only: integer and rational times keep the exact range `tbegin:Δt:tend`, so an `Int8`
   series keeps its element type and integer endpoints near `typemax` do not wrap. A zero `Δt`
   throws `ArgumentError("time step cannot be zero")` for every time type, and so does

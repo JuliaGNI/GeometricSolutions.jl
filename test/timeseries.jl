@@ -1,5 +1,6 @@
 using GeometricSolutions
 using OffsetArrays
+using Random
 using Test
 
 @testset "$(rpad("Timeseries",80))" begin
@@ -104,6 +105,41 @@ end
     # A zero time step has no step count.
     @test_throws r"^ArgumentError: time step cannot be zero" TimeSeries(0.0, 1.0, 0.0)
     @test_throws r"^ArgumentError: time step cannot be zero" TimeSeries(10, 0.0)
+end
+
+@testset "$(rpad("Timeseries step count in exact arithmetic",80))" begin
+    # The counting rule in exact arithmetic on the binary values of the endpoints and the step.
+    function exact_count(a::T, b::T, h::T) where {T}
+        x₀, x₁, y = Rational{BigInt}(a), Rational{BigInt}(b), Rational{BigInt}(h)
+        q = (x₁ - x₀) / y
+        n = round(q)
+        fills = abs(x₀ + n * y - x₁) ≤ 8 * Rational{BigInt}(eps(T)) * max(abs(x₀), abs(x₁))
+        Int(fills ? n : floor(q))
+    end
+
+    # In Float16, `tend - tbegin = 1024.5` rounds to 1024, which is one step short.
+    ts = TimeSeries(Float16(0.5), Float16(1025), Float16(0.5))
+    @test ntime(ts) == 2049
+    @test eltype(ts) == Float16
+    @test ts[end] == Float16(1025)
+
+    # Two Float32 spans whose rounded difference changes the count.
+    for (a, b, h) in ((0.95651406f0, 8.94363f0, 0.001543704f0),
+        (9.835699f0, 11.890267f0, 0.011607794f0))
+        @test ntime(TimeSeries(a, b, h)) == exact_count(a, b, h)
+    end
+
+    Random.seed!(1)
+    for T in (Float16, Float32, Float64)
+        wrong = 0
+        for _ in 1:10_000
+            a = T(10 * rand())
+            b = a + T(10 * rand())
+            h = T(rand() / 10 + 1e-3)
+            wrong += ntime(TimeSeries(a, b, h)) != exact_count(a, b, h)
+        end
+        @test wrong == 0
+    end
 end
 
 @testset "$(rpad("Timeseries of exact time types",80))" begin
