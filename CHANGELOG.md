@@ -28,8 +28,11 @@ fact loses exactly the reasoning that makes it worth keeping.
   The number of steps is now `round((tend - tbegin)/Δt)` when `tbegin + n·Δt` lies within 8 ulp
   (`8·eps·max(|tbegin|, |tend|)`) of `tend`, and `floor` otherwise, in the internal function
   `ntimesteps`. A span that is a whole number of steps always holds all of them; a span that is
-  not still ends at the last step before `tend`, as before. `TimeSeries(n, Δt)` builds its range
-  directly with `n + 1` points. No API change.
+  not still ends at the last step before `tend`, as before. The rule applies to floating-point
+  times only: integer and rational times keep the exact range `tbegin:Δt:tend`, so an `Int8`
+  series keeps its element type and integer endpoints near `typemax` do not wrap. A zero `Δt`
+  throws `ArgumentError("time step cannot be zero")` for every time type, and so does
+  `TimeSeries(n, Δt)`, which delegates to `TimeSeries(zero(Δt), n * Δt, Δt)`. No API change.
   The step count of `ntime(::EquationProblem)` in GeometricEquations, which rounds up and takes
   one step too many on some of the same spans, is moved to the same rule in a companion change
   there.

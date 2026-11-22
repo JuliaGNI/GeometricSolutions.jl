@@ -103,4 +103,26 @@ end
 
     # A zero time step has no step count.
     @test_throws r"^ArgumentError: time step cannot be zero" TimeSeries(0.0, 1.0, 0.0)
+    @test_throws r"^ArgumentError: time step cannot be zero" TimeSeries(10, 0.0)
+end
+
+@testset "$(rpad("Timeseries of exact time types",80))" begin
+    # An integer time series keeps the time type in its grid.
+    ts = TimeSeries(Int8(0), Int8(10), Int8(3))
+    @test eltype(ts) == Int8
+    @test ntime(ts) == 3
+    @test ts[end] == Int8(9)
+
+    # The span of integer endpoints near `typemax` does not wrap: one step of `3u` fits in `4u`.
+    u = Int64(1) << 61
+    ts = TimeSeries(-2u, 2u, 3u)
+    @test ntime(ts) == 1
+    @test ts[end] == u
+
+    # A rational time series counts whole steps exactly, forward and backward.
+    @test ntime(TimeSeries(0 // 1, 1 // 1, 3 // 10)) == 3
+    @test ntime(TimeSeries(0 // 1, 1 // 1, 1 // 10)) == 10
+    @test ntime(TimeSeries(1 // 1, 0 // 1, -1 // 10)) == 10
+    zero_step = r"^ArgumentError: time step cannot be zero"
+    @test_throws zero_step TimeSeries(0 // 1, 1 // 1, 0 // 1)
 end
