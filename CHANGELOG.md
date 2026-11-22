@@ -11,6 +11,29 @@ This file was started on 2026-08-31. 52 versions were released before it, the mo
 tags. It is named as a gap rather than reconstructed, because a changelog assembled after the
 fact loses exactly the reasoning that makes it worth keeping.
 
+## [Unreleased] — targeting 0.7.1
+
+### Bug Fixes
+
+- **`TimeSeries(tbegin, tend, Δt)` no longer drops the last step.** The grid was the float range
+  `tbegin:Δt:tend`, which loses the final step where `(tend - tbegin)/Δt` rounds just below an
+  integer. A span of 5λ in steps of λ/21, with λ = 2π/k0 and k0 = 2π·100e9/2.99792458e10, has the
+  quotient 104.99999999999999: the grid held 104 steps of 105 and ended at 1.4847 instead of
+  1.4990. In a sweep of steps λ/k, k = 1:200, over spans mλ, m = 1:10, 183 of 2000 `Float64`
+  spans and 92 of 2000 `Float32` spans lost the last step.
+  `GeometricSolution(problem)` and `EnsembleSolution(problem)` build their grids through this
+  constructor, so an integrator that steps `ntime(solution)`, such as `integrate` in
+  GeometricIntegratorsBase, took one step too few on such spans.
+
+  The number of steps is now `round((tend - tbegin)/Δt)` when `tbegin + n·Δt` lies within 8 ulp
+  (`8·eps·max(|tbegin|, |tend|)`) of `tend`, and `floor` otherwise, in the internal function
+  `ntimesteps`. A span that is a whole number of steps always holds all of them; a span that is
+  not still ends at the last step before `tend`, as before. `TimeSeries(n, Δt)` builds its range
+  directly with `n + 1` points. No API change.
+  The step count of `ntime(::EquationProblem)` in GeometricEquations, which rounds up and takes
+  one step too many on some of the same spans, is moved to the same rule in a companion change
+  there.
+
 ## [0.7.0]
 
 ### Breaking Changes

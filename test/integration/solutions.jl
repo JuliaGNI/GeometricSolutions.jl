@@ -60,6 +60,21 @@ const nstep = 10
     @test arrays(sol).q == hcat(map(q -> vec(q), sol.q)...)
 end
 
+@testset "$(rpad("Solution of a span of whole steps",80))" begin
+    # 5λ in steps of λ/21, with λ the wavelength of a 100 GHz wave in centimetres: the quotient
+    # (tend - tbegin)/Δt is 104.99999999999999, and a float range `tbegin:Δt:tend` holds 104 steps.
+    λ = 2π / (2π * 100e9 / 2.99792458e10)
+    prob = Tests.ExponentialGrowth.odeproblem(; tbegin = 0.0, tend = 5λ, Δt = λ / 21)
+    sol = GeometricSolution(prob)
+    @test ntime(sol) == 105
+    @test isapprox(timesteps(sol)[end], 5λ; rtol = 8eps())
+
+    ens = Tests.ExponentialGrowth.odeensemble(; tbegin = 0.0, tend = 5λ, Δt = λ / 21)
+    esol = EnsembleSolution(ens)
+    @test ntime(esol) == 105
+    @test all(s -> ntime(s) == 105, esol)
+end
+
 @testset "$(rpad("Solution type aliases",80))" begin
     ode = Tests.ExponentialGrowth.odeproblem()
     pode = PODEProblem((v, t, q, p, params) -> (v[1] = p[1]),
