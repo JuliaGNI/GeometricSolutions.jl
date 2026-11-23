@@ -11,7 +11,7 @@ This file was started on 2026-08-31. 52 versions were released before it, the mo
 tags. It is named as a gap rather than reconstructed, because a changelog assembled after the
 fact loses exactly the reasoning that makes it worth keeping.
 
-## [Unreleased] — targeting 0.7.1
+## [0.7.1]
 
 ### Bug Fixes
 
@@ -32,14 +32,15 @@ fact loses exactly the reasoning that makes it worth keeping.
   narrow time type (in `Float16`, the span 0.5 to 1025 in steps of 0.5 gave 2048 steps instead of
   2049); the tolerance stays that of the time type `T`, and the grid elements keep `T`. A span
   that is a whole number of steps always holds all of them; a span that is not still ends at the
-  last step before `tend`, as before. The rule applies to floating-point
-  times only: integer and rational times keep the exact range `tbegin:Δt:tend`, so an `Int8`
-  series keeps its element type and integer endpoints near `typemax` do not wrap. A zero `Δt`
-  throws `ArgumentError("time step cannot be zero")` for every time type, and so does
+  last step before `tend`, as before. The rule applies to floating-point times only: integer and
+  rational times keep the exact range `tbegin:Δt:tend`, so an `Int8` series keeps its element
+  type and integer endpoints near `typemax` do not wrap. A zero `Δt` throws
+  `ArgumentError("time step cannot be zero")` for every time type, and so does
   `TimeSeries(n, Δt)`, which delegates to `TimeSeries(zero(Δt), n * Δt, Δt)`. No API change.
-  The step count of `ntime(::EquationProblem)` in GeometricEquations, which rounds up and takes
-  one step too many on some of the same spans, is moved to the same rule in a companion change
-  there.
+- **The `GeometricEquations` floor is 0.21.8** (`[compat] GeometricEquations = "0.21.8"`, from
+  0.21.5). From 0.21.8, `ntime(::EquationProblem)` counts with the same rule, so the step count
+  of a problem is the number of steps of its solution's grid. Before, it rounded up and took one
+  step too many on some of the same spans.
 
 ## [0.7.0]
 
