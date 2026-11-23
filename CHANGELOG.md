@@ -17,9 +17,12 @@ fact loses exactly the reasoning that makes it worth keeping.
 
 - **The `ntimesteps` docstring defines `T`.** The signature now reads
   `ntimesteps(tbegin::T, tend::T, Δt::T) where {T <: AbstractFloat}` and the tolerance
-  `8 * eps(T) * max(abs(tbegin), abs(tend))`. Before, the text referred to "the tolerance of `T`"
-  with no `T` on the page, and wrote `eps` without its argument. Documentation only; no code or
-  behaviour changes.
+  `8 * eps(T) * max(abs(tbegin), abs(tend))`, and states that the endpoints and the step are
+  converted to `W = promote_type(T, Float64)` and every expression, the tolerance included, is
+  evaluated in `W`. Before, the text referred to "the tolerance of `T`" with no `T` on the page,
+  and wrote `eps` without its argument. The `W` statement matters for `Float16`: read in `T`, the
+  formula rounds the tolerance up and would accept a step count that the code, evaluating in
+  `Float64`, does not return. Documentation only; no code or behaviour changes.
 
 ## [0.7.2]
 
