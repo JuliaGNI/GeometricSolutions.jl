@@ -10,10 +10,10 @@ struct TimeSeries{T, N, OT <: OffsetVector{T}} <: AbstractVector{T}
 end
 
 """
-    ntimesteps(tbegin, tend, Δt)
+    ntimesteps(tbegin::T, tend::T, Δt::T) where {T <: AbstractFloat}
 
 The number of whole steps `Δt` from `tbegin` to `tend`, for floating-point times. A count `n`
-whose end `tbegin + n * Δt` lies within `8 * eps * max(abs(tbegin), abs(tend))` of `tend` fills
+whose end `tbegin + n * Δt` lies within `8 * eps(T) * max(abs(tbegin), abs(tend))` of `tend` fills
 the span, on either side of `tend`, so a quotient `(tend - tbegin) / Δt` that rounds just below an
 integer loses no step. Any other count rounds down, and the last step ends before `tend`. The count
 is computed in at least `Float64`, with the tolerance of `T`, so that `tend - tbegin` does not

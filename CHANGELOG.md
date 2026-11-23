@@ -11,6 +11,16 @@ This file was started on 2026-08-31. 52 versions were released before it, the mo
 tags. It is named as a gap rather than reconstructed, because a changelog assembled after the
 fact loses exactly the reasoning that makes it worth keeping.
 
+## [Unreleased] — targeting 0.7.3
+
+### Bug Fixes
+
+- **The `ntimesteps` docstring defines `T`.** The signature now reads
+  `ntimesteps(tbegin::T, tend::T, Δt::T) where {T <: AbstractFloat}` and the tolerance
+  `8 * eps(T) * max(abs(tbegin), abs(tend))`. Before, the text referred to "the tolerance of `T`"
+  with no `T` on the page, and wrote `eps` without its argument. Documentation only; no code or
+  behaviour changes.
+
 ## [0.7.2]
 
 ### New Features
