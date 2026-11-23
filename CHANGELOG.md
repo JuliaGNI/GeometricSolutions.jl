@@ -11,6 +11,18 @@ This file was started on 2026-08-31. 52 versions were released before it, the mo
 tags. It is named as a gap rather than reconstructed, because a changelog assembled after the
 fact loses exactly the reasoning that makes it worth keeping.
 
+## [Unreleased]
+
+### New Features
+
+- **`ntimesteps` is public.** `ntimesteps(tbegin, tend, Δt)`, the rule by which
+  `TimeSeries(tbegin, tend, Δt)` counts its steps (see 0.7.1), is declared `public`. It is not
+  exported. A downstream package that counts the steps of a run can now use the same rule as the
+  solution's time grid, through `GeometricSolutions.ntimesteps` or an explicit
+  `using GeometricSolutions: ntimesteps`, without relying on an internal name:
+  `ntimesteps(tbegin, tend, Δt) == ntime(TimeSeries(tbegin, tend, Δt))` for floating-point times.
+  No behaviour changes.
+
 ## [0.7.1]
 
 ### Bug Fixes
