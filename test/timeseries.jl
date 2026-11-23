@@ -1,4 +1,5 @@
 using GeometricSolutions
+import GeometricEquations
 using OffsetArrays
 using Random
 using Test
@@ -92,6 +93,23 @@ end
     @test !Base.isexported(GeometricSolutions, :ntimesteps)
     @test GeometricSolutions.ntimesteps(0.0, 5λ, λ / 21) ==
           ntime(TimeSeries(0.0, 5λ, λ / 21))
+
+    # The time grid counts its steps by the rule of the problem's step count, so a solution
+    # holds as many steps as the problem takes.
+    for T in (Float16, Float32, Float64), t₀ in (zero(T), T(1.5))
+
+        wrong = 0
+        for k in 1:200, m in 1:10
+
+            Δt = T(λ) / k
+            t₁ = t₀ + m * T(λ)
+            wrong += GeometricSolutions.ntimesteps(t₀, t₁, Δt) !=
+                     GeometricEquations.ntimesteps((t₀, t₁), Δt)
+            wrong += GeometricSolutions.ntimesteps(t₁, t₀, -Δt) !=
+                     GeometricEquations.ntimesteps((t₁, t₀), -Δt)
+        end
+        @test wrong == 0
+    end
 end
 
 @testset "$(rpad("Timeseries of a span of partial steps",80))" begin
@@ -113,6 +131,19 @@ end
     # A zero time step has no step count.
     @test_throws r"^ArgumentError: time step cannot be zero" TimeSeries(0.0, 1.0, 0.0)
     @test_throws r"^ArgumentError: time step cannot be zero" TimeSeries(10, 0.0)
+
+    # A time step whose sign is opposite to that of `tend - tbegin` has no step count, also where
+    # it is longer than the span.
+    wrong_sign = r"^ArgumentError: time step .* does not point from"
+    for (t₀, t₁, Δt) in ((0.0, 1.0, -0.3), (0.0, 1.0, -2.0),
+        (1.0, 0.0, 0.1), (1.0f0, 0.0f0, 2.0f0))
+        @test_throws wrong_sign TimeSeries(t₀, t₁, Δt)
+        @test_throws wrong_sign GeometricSolutions.ntimesteps(t₀, t₁, Δt)
+    end
+
+    # An empty span has no steps, whatever the sign of the time step.
+    @test ntime(TimeSeries(1.0, 1.0, 0.1)) == 0
+    @test ntime(TimeSeries(1.0, 1.0, -0.1)) == 0
 end
 
 @testset "$(rpad("Timeseries step count in exact arithmetic",80))" begin

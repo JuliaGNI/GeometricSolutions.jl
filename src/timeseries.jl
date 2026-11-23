@@ -12,21 +12,19 @@ end
 """
     ntimesteps(tbegin::T, tend::T, Δt::T) where {T <: AbstractFloat}
 
-The number of whole steps `Δt` from `tbegin` to `tend`, for floating-point times. A count `n`
+The number of whole steps `Δt` from `tbegin` to `tend`, for floating-point times: the step count
+`GeometricEquations.ntimesteps((tbegin, tend), Δt)` of a problem over the same span. A count `n`
 whose end `tbegin + n * Δt` lies within `8 * eps(T) * max(abs(tbegin), abs(tend))` of `tend` fills
 the span, on either side of `tend`, so a quotient `(tend - tbegin) / Δt` that rounds just below an
 integer loses no step. Any other count rounds down, and the last step ends before `tend`. The count
 is computed in at least `Float64`, with the tolerance of `T`, so that `tend - tbegin` does not
-round in a narrower type. A zero `Δt` throws an `ArgumentError`.
+round in a narrower type. A zero `Δt` throws an `ArgumentError`, and so does a `Δt` whose sign is
+opposite to that of `tend - tbegin`.
 """
 function ntimesteps(tbegin::T, tend::T, Δt::T) where {T <: AbstractFloat}
-    iszero(Δt) && throw(ArgumentError("time step cannot be zero"))
-    W = promote_type(T, Float64)
-    t₀, t₁, h = W(tbegin), W(tend), W(Δt)
-    q = (t₁ - t₀) / h
-    n = round(q)
-    fills = abs(t₀ + n * h - t₁) ≤ 8 * eps(T) * max(abs(t₀), abs(t₁))
-    return Int(fills ? n : floor(q))
+    sign(Δt) * sign(tend - tbegin) < 0 &&
+        throw(ArgumentError("time step $Δt does not point from $tbegin to $tend"))
+    return GeometricEquations.ntimesteps((tbegin, tend), Δt)
 end
 
 function TimeSeries(tbegin::T, tend::T, Δt::T) where {T <: AbstractFloat}

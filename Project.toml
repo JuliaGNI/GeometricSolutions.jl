@@ -18,7 +18,7 @@ GeometricSolutionsHDF5Ext = "HDF5"
 
 [compat]
 GeometricBase = "0.15.0"
-GeometricEquations = "0.21.8"
+GeometricEquations = "0.21.9"
 HDF5 = "0.17"
 LinearAlgebra = "1"
 OffsetArrays = "1.14"
