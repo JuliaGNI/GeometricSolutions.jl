@@ -86,6 +86,14 @@ const λ = 2π / (2π * 100e9 / 2.99792458e10)
     end
 end
 
+@testset "$(rpad("Timeseries step count is public",80))" begin
+    # Downstream packages count the steps of a run with `ntimesteps`, the rule of the time grid.
+    @test Base.ispublic(GeometricSolutions, :ntimesteps)
+    @test !Base.isexported(GeometricSolutions, :ntimesteps)
+    @test GeometricSolutions.ntimesteps(0.0, 5λ, λ / 21) ==
+          ntime(TimeSeries(0.0, 5λ, λ / 21))
+end
+
 @testset "$(rpad("Timeseries of a span of partial steps",80))" begin
     # A span that is no whole number of steps ends at the last step before `tend`: the count
     # rounds down, also where it is nearer the next integer (1/0.35 ≈ 2.86).

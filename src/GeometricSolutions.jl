@@ -27,6 +27,7 @@ export DataSeries, ScalarDataSeries
 include("timeseries.jl")
 
 export TimeSeries
+public ntimesteps
 
 include("geometric_solution.jl")
 
