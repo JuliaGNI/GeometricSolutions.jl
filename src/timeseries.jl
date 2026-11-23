@@ -9,7 +9,34 @@ struct TimeSeries{T, N, OT <: OffsetVector{T}} <: AbstractVector{T}
     end
 end
 
+"""
+    ntimesteps(tbegin, tend, Δt)
+
+The number of whole steps `Δt` from `tbegin` to `tend`, for floating-point times. A count `n`
+whose end `tbegin + n * Δt` lies within `8 * eps * max(abs(tbegin), abs(tend))` of `tend` fills
+the span, on either side of `tend`, so a quotient `(tend - tbegin) / Δt` that rounds just below an
+integer loses no step. Any other count rounds down, and the last step ends before `tend`. The count
+is computed in at least `Float64`, with the tolerance of `T`, so that `tend - tbegin` does not
+round in a narrower type. A zero `Δt` throws an `ArgumentError`.
+"""
+function ntimesteps(tbegin::T, tend::T, Δt::T) where {T <: AbstractFloat}
+    iszero(Δt) && throw(ArgumentError("time step cannot be zero"))
+    W = promote_type(T, Float64)
+    t₀, t₁, h = W(tbegin), W(tend), W(Δt)
+    q = (t₁ - t₀) / h
+    n = round(q)
+    fills = abs(t₀ + n * h - t₁) ≤ 8 * eps(T) * max(abs(t₀), abs(t₁))
+    return Int(fills ? n : floor(q))
+end
+
+function TimeSeries(tbegin::T, tend::T, Δt::T) where {T <: AbstractFloat}
+    n = ntimesteps(tbegin, tend, Δt)
+    TimeSeries(range(tbegin; step = Δt, length = n + 1), Δt)
+end
+
+# Exact time types, such as integers and rationals, count their steps without rounding.
 function TimeSeries(tbegin::T, tend::T, Δt::T) where {T <: Real}
+    iszero(Δt) && throw(ArgumentError("time step cannot be zero"))
     TimeSeries(tbegin:Δt:tend, Δt)
 end
 
