@@ -23,6 +23,25 @@ fact loses exactly the reasoning that makes it worth keeping.
   and wrote `eps` without its argument. The `W` statement matters for `Float16`: read in `T`, the
   formula rounds the tolerance up and would accept a step count that the code, evaluating in
   `Float64`, does not return. Documentation only; no code or behaviour changes.
+- **A time step that points away from `tend` throws instead of returning a negative count.**
+  `ntimesteps(tbegin, tend, Δt)` and `TimeSeries(tbegin, tend, Δt)` with floating-point times now
+  throw `ArgumentError("time step $Δt does not point from $tbegin to $tend")` when the sign of
+  `Δt` is opposite to that of `tend - tbegin`. Before, `ntimesteps` returned a negative count
+  (0 to 1 in steps of -0.3 gave -4; in steps of -2.0 it gave -1), and `TimeSeries` either failed
+  with `ArgumentError: length cannot be negative, got -3` or, where the step was longer than the
+  span, returned an empty series. An empty finite span (`tbegin == tend`) still has 0 steps,
+  whatever the sign of `Δt`. Counts for a step that points from `tbegin` to `tend` do not change,
+  and integer and rational times are unchanged (they keep `tbegin:Δt:tend`). Code that relied on
+  the negative count or the empty series for a wrong-sign step now gets the error.
+- **`ntimesteps` shares the counting rule of `ntime(::EquationProblem)`.** The floating-point
+  method no longer carries its own copy of the rule; it calls
+  `GeometricEquations.ntimesteps((tbegin, tend), Δt)`, which GeometricEquations declares public
+  in 0.21.9. A solution's time grid and its problem's step count follow one rule by construction,
+  not by two copies kept in step. The two copies agreed on all 48,000 spans of a sweep with
+  matching signs (steps λ/k, k = 1:200, spans mλ, m = 1:10, three start times, forward and
+  backward, `Float16`, `Float32`, `Float64` and `BigFloat`), so no count changes.
+- **Compat: `GeometricEquations = "0.21.9"`** (from 0.21.8), the first release with
+  `ntimesteps` public. Needed by the item above; the lower bound excludes 0.21.8.
 
 ## [0.7.2]
 
